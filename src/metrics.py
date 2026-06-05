@@ -70,6 +70,10 @@ def sliced_wasserstein_distance(X, Y, n_projections: int = 128, seed: int = 42) 
     return float(np.sqrt(np.mean(distances)))
 
 
+def sliced_w2(X, Y, n_projections: int = 128, seed: int = 42) -> float:
+    return sliced_wasserstein_distance(X, Y, n_projections=n_projections, seed=seed)
+
+
 def _median_gamma(X, Y) -> float:
     Z = np.vstack([np.asarray(X, dtype=float), np.asarray(Y, dtype=float)])
     if len(Z) > 512:
@@ -131,6 +135,10 @@ def trajectory_path_length(traj: np.ndarray) -> float:
     return float(step_lengths.sum(axis=0).mean())
 
 
+def path_length(traj) -> float:
+    return trajectory_path_length(np.asarray(traj, dtype=float))
+
+
 def trajectory_path_energy(traj: np.ndarray, times: np.ndarray | None = None) -> float:
     """Mean squared-speed action proxy from sampled trajectories."""
     traj = _validate_traj(traj)
@@ -149,12 +157,41 @@ def trajectory_path_energy(traj: np.ndarray, times: np.ndarray | None = None) ->
     return float((speed2 * dt[:, None]).sum(axis=0).mean())
 
 
+def path_energy(traj, times=None) -> float:
+    return trajectory_path_energy(np.asarray(traj, dtype=float), times=times)
+
+
 def trajectory_straightness(traj: np.ndarray, eps: float = 1e-8) -> float:
     """Mean integrated length divided by endpoint distance minus one."""
     traj = _validate_traj(traj)
     step_lengths = np.linalg.norm(np.diff(traj, axis=0), axis=-1).sum(axis=0)
     endpoint_dist = np.linalg.norm(traj[-1] - traj[0], axis=-1)
     return float(np.mean(step_lengths / np.maximum(endpoint_dist, float(eps)) - 1.0))
+
+
+def tortuosity_straightness(traj) -> float:
+    return trajectory_straightness(np.asarray(traj, dtype=float))
+
+
+def straightness(traj) -> float:
+    return tortuosity_straightness(traj)
+
+
+def straightness_action_S(traj, times=None) -> float:
+    """Planning straightness action against the endpoint chord."""
+    traj = np.asarray(traj, dtype=float)
+    if traj.ndim != 3 or traj.shape[0] < 2:
+        raise ValueError("traj must have shape (T, N, D) with T >= 2")
+    if times is None:
+        times = np.linspace(0.0, 1.0, traj.shape[0])
+    times = np.asarray(times, dtype=float)
+    dt = np.diff(times)
+    if len(dt) != traj.shape[0] - 1 or np.any(dt <= 0):
+        raise ValueError("times must be strictly increasing and match traj")
+    vel = np.diff(traj, axis=0) / dt[:, None, None]
+    chord = traj[-1] - traj[0]
+    sq = np.sum((chord[None, :, :] - vel) ** 2, axis=-1)
+    return float(np.sum(sq.mean(axis=1) * dt))
 
 
 def off_manifold_knn_distance(points: np.ndarray, reference: np.ndarray, k: int = 10) -> float:
@@ -182,6 +219,69 @@ def off_manifold_knn_distance(points: np.ndarray, reference: np.ndarray, k: int 
         d = np.linalg.norm(points[:, None, :] - reference[None, :, :], axis=-1)
         distances = np.sort(d, axis=1)[:, :k]
     return float(distances.mean())
+
+
+def off_manifold_knn(points, reference, k: int = 15, batch_size: int = 1000) -> float:
+    points_arr = np.asarray(points, dtype=np.float32)
+    reference_arr = np.asarray(reference, dtype=np.float32)
+    if points_arr.ndim == 3:
+        points_arr = points_arr.reshape(-1, points_arr.shape[-1])
+    if points_arr.ndim != 2 or reference_arr.ndim != 2:
+        raise ValueError("points and reference must be 2D arrays, or points may be a (T, N, D) trajectory")
+    if points_arr.shape[1] != reference_arr.shape[1]:
+        raise ValueError("points and reference must have the same feature dimension")
+    if points_arr.shape[0] <= batch_size:
+        return off_manifold_knn_distance(points_arr, reference_arr, k=k)
+    from sklearn.neighbors import NearestNeighbors
+
+    kk = max(1, min(int(k), reference_arr.shape[0]))
+    nn = NearestNeighbors(n_neighbors=kk, algorithm="ball_tree", leaf_size=40, n_jobs=1)
+    nn.fit(reference_arr)
+    total = 0.0
+    count = 0
+    for start in range(0, points_arr.shape[0], int(batch_size)):
+        distances, _ = nn.kneighbors(points_arr[start:start + int(batch_size)])
+        total += float(distances.sum())
+        count += int(distances.size)
+    return total / max(count, 1)
+
+
+def plan_entropy(pi) -> float:
+    pi = np.asarray(pi, dtype=float)
+    p = pi[pi > 0]
+    return -float(np.sum(p * np.log(p))) if p.size else 0.0
+
+
+def effective_support(pi) -> float:
+    entropy = plan_entropy(pi)
+    return float(np.exp(entropy)) if np.asarray(pi)[np.asarray(pi) > 0].size else 0.0
+
+
+def topk_nn_overlap(X_a, X_b, k: int = 15) -> float:
+    from .representations import nearest_neighbor_overlap
+
+    return nearest_neighbor_overlap(X_a, X_b, k=k)
+
+
+def coupling_topk_overlap(pi_a, pi_b, k: int = 15) -> float:
+    pi_a = np.asarray(pi_a, dtype=float)
+    pi_b = np.asarray(pi_b, dtype=float)
+    if pi_a.shape != pi_b.shape:
+        raise ValueError("coupling shapes differ")
+    k = max(1, min(int(k), pi_a.shape[1]))
+    rows = []
+    for a, b in zip(pi_a, pi_b):
+        ta = set(np.argpartition(-a, kth=k - 1)[:k].tolist())
+        tb = set(np.argpartition(-b, kth=k - 1)[:k].tolist())
+        rows.append(len(ta & tb) / float(k))
+    return float(np.mean(rows))
+
+
+def evaluate_endpoint(pred, target, seed: int = 42) -> dict:
+    return {
+        "endpoint_mmd": mmd_rbf(pred, target),
+        "sliced_w2": sliced_w2(pred, target, seed=seed),
+    }
 
 
 def fate_mass_error(pred_labels, target_labels) -> float:

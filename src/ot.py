@@ -75,10 +75,28 @@ def random_pair_indices(n_source: int, n_target: int, batch_size: int, seed: int
     return i0, i1
 
 
+def sample_independent_pairs(X0, X1, n_pairs: int, seed: int = 42):
+    return random_pair_indices(len(X0), len(X1), batch_size=int(n_pairs), seed=seed)
+
+
+def compute_cost_matrix(x0, x1, normalize: bool = True):
+    C = pairwise_squared_distances(np.asarray(x0, dtype=np.float32), np.asarray(x1, dtype=np.float32)).astype(np.float32)
+    if not normalize:
+        return C, 1.0
+    positive = C[C > 0]
+    scale = float(np.median(positive)) if positive.size else 1.0
+    scale = max(scale, 1e-12)
+    return (C / scale).astype(np.float32), scale
+
+
 def compute_ot_coupling(X0, X1, epsilon: float = 0.05):
     """Return a small balanced coupling. Uses POT Sinkhorn when available."""
     C = pairwise_squared_distances(X0, X1)
     return compute_ot_coupling_from_cost(C, epsilon=epsilon, return_info=False)
+
+
+def sinkhorn_plan(C, epsilon: float = 0.05, return_info: bool = False):
+    return compute_ot_coupling_from_cost(np.asarray(C, dtype=np.float32), epsilon=float(epsilon), return_info=return_info)
 
 
 def compute_ot_coupling_from_cost(
@@ -242,6 +260,10 @@ def sample_pair_indices_from_coupling(
     flat = rng.choice(len(p), size=int(batch_size), replace=True, p=p)
     i0, i1 = np.unravel_index(flat, pi.shape)
     return np.asarray(i0, dtype=int), np.asarray(i1, dtype=int)
+
+
+def sample_from_plan(pi, n_pairs: int, seed: int = 42):
+    return sample_pair_indices_from_coupling(np.asarray(pi, dtype=float), batch_size=int(n_pairs), seed=seed)
 
 
 def coupling_diagnostics(pi: np.ndarray, C: np.ndarray | None = None) -> dict:
