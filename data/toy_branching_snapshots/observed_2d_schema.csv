@@ -1,0 +1,7 @@
+field,dtype,meaning,used_for,is_observed
+cell_id,string,Sampled cell id for one observed snapshot row; not longitudinal identity.,row identifier and sanity checks,True
+state_1,float32,First coordinate in the 2D toy state space.,visualization and downstream toy inputs,True
+state_2,float32,Second coordinate in the 2D toy state space.,visualization and downstream toy inputs,True
+time,float32,Snapshot collection time for the sampled population.,conditioning empirical marginals by time,True
+condition,string,Experimental condition; defaults to control in Chapter 1.,conditioning notation and later perturbation examples,True
+fate_label,string,"Optional diagnostic label for the toy generator, not observed lineage supervision.",diagnostics and figure coloring only when needed,False

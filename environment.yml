@@ -1,0 +1,23 @@
+name: fmdb
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - numpy
+  - scipy
+  - pandas
+  - scikit-learn
+  - matplotlib
+  - seaborn
+  - pyyaml
+  - tqdm
+  - jupyterlab
+  - ipykernel
+  - pytest
+  - pytorch
+  - pip
+  - pip:
+      - anndata
+      - scanpy
+      - pot
+      - torchdiffeq

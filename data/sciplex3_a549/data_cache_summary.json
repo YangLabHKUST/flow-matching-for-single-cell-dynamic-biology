@@ -1,0 +1,40 @@
+{
+  "source":"scPerturb SrivatsanTrapnell2020_sciplex3.h5ad",
+  "source_url":"https:\/\/zenodo.org\/api\/records\/13350497\/files\/SrivatsanTrapnell2020_sciplex3.h5ad\/content",
+  "download_url":"https:\/\/zenodo.org\/api\/records\/13350497\/files\/SrivatsanTrapnell2020_sciplex3.h5ad\/content",
+  "download_error":null,
+  "is_synthetic":false,
+  "adata_path":"data\/sciplex3_a549\/sciplex3_a549_hvg_top1000.h5ad",
+  "metadata_path":"data\/sciplex3_a549\/metadata.csv",
+  "cell_counts_path":"data\/sciplex3_a549\/compound_dose_cell_counts.csv",
+  "n_cells":7856,
+  "n_genes":1000,
+  "K_compounds":8,
+  "compound_list":[
+    "AG-14361",
+    "AG-490 (Tyrphostin B42)",
+    "Alisertib (MLN8237)",
+    "Altretamine",
+    "Aminoglutethimide",
+    "Amisulpride",
+    "Andarine",
+    "Azacitidine"
+  ],
+  "vehicle_count":250,
+  "dose_values":[
+    10.0,
+    100.0,
+    1000.0,
+    10000.0
+  ],
+  "missing_smiles_count":0,
+  "hvg_top_n":1000,
+  "obs_schema_used":{
+    "cell_line":"cell_line",
+    "compound":"perturbation",
+    "dose":"dose_value",
+    "vehicle":"perturbation == control or dose_value == 0",
+    "smiles":"LINCS GSE92742 pert_iname\/canonical_smiles map"
+  },
+  "subset_rule":"A549 only; compounds with LINCS SMILES, doses 10\/100\/1000\/10000 nM, >=200 cells per compound-dose; sorted by compound name; first 8 compounds; at most 250 cells per compound-dose and 250 vehicle cells sampled with fixed seed."
+}

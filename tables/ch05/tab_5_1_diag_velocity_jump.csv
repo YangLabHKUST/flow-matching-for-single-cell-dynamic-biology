@@ -1,0 +1,7 @@
+method,boundary,velocity_jump_mean_l2,boundary_start_residual,boundary_end_residual
+pairwise_local_bridges,t1,8.053829193115234,1.1012258529663086,0.6640301942825317
+shared_adjacent_only,t1,8.168669700622559,0.0,0.0
+shared_adjacent_skip,t1,5.6285319328308105,0.0,0.0
+pairwise_local_bridges,t3,8.590636253356934,1.1786589622497559,0.901965856552124
+shared_adjacent_only,t3,4.799014568328857,0.0,0.0
+shared_adjacent_skip,t3,2.4040377140045166,0.0,0.0

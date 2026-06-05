@@ -1,0 +1,22 @@
+{
+  "owned_figures": [
+    "figB1_eb20d_train_val_loss.png",
+    "fig03_04_eb_endpoint_pairs_phate.png",
+    "fig03_08_eb_population_evolution_phate.png",
+    "fig03_09_euler_step_sensitivity_phate.png"
+  ],
+  "owned_outputs": [
+    "ch03_eb20d_velocity_mlp_seed42.pt",
+    "ch03_eb20d_main_config_seed42.json",
+    "run_config_03_2_eb20d_main_flow_matching.json"
+  ],
+  "owned_tables": [
+    "ch03_eb_timepoint_counts.csv",
+    "ch03_eb20d_train_val_split.csv",
+    "ch03_eb20d_training_log.csv",
+    "ch03_euler_step_sensitivity.csv"
+  ],
+  "quick_mode": true,
+  "seed": 42,
+  "smoke_mode": false
+}

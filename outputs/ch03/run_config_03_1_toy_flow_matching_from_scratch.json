@@ -1,0 +1,19 @@
+{
+  "full_run_hints": {
+    "capacity_steps": 1200,
+    "cnf_steps": 600,
+    "eb_train_steps": 10000,
+    "notes": "Set CH03_QUICK=0 for full-run settings; default remains quick and reproducible.",
+    "time_ablation_steps": 1200
+  },
+  "owned_figures": [
+    "fig_toy_loss.png",
+    "fig_toy_evolution.png",
+    "fig03_02_conditional_vs_marginal_toy.png",
+    "fig03_03_cfm_object_hierarchy_toy.png"
+  ],
+  "paper_figure_mode": true,
+  "quick_mode": true,
+  "seed": 42,
+  "smoke_mode": false
+}

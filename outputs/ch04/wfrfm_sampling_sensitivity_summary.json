@@ -1,0 +1,109 @@
+{
+  "experiment": "Exp 9b WFR-FM sampling-depth sensitivity",
+  "wfrfm_repo_path": "/import/home4/xmabs/flow_matching_for_dynamic_biology/baselines/WFR-FM",
+  "wfrfm_git_commit": "11c7ae99746ab023f4065f4bfea74484ce651d87",
+  "data_path": "/import/home4/xmabs/flow_matching_for_dynamic_biology/flow_matching_for_dynamic_biology/data/trajectorynet_eb/eb_velocity_v5.npz",
+  "dim": 5,
+  "delta": 2.0,
+  "epochs": 5,
+  "batch_size": 512,
+  "chunk_size": 80,
+  "use_mini_batch": true,
+  "raw_timepoint_counts": {
+    "0": 2381,
+    "1": 4163,
+    "2": 3278,
+    "3": 3665,
+    "4": 3332
+  },
+  "equal_depth_count": 80,
+  "equal_seeds": [
+    42
+  ],
+  "raw_seed": 11,
+  "k_bins": 8,
+  "eval_cells_per_time": 120,
+  "smoke": true,
+  "device": "cpu",
+  "runtime_sec": 13.08147144317627,
+  "run_records": [
+    {
+      "setting": "raw_observed_depth",
+      "seed": 11,
+      "n_train_cells": 400,
+      "train_timepoint_counts": {
+        "0": 80,
+        "1": 80,
+        "2": 80,
+        "3": 80,
+        "4": 80
+      },
+      "normalization": {
+        "mean": [
+          0.05991401523351669,
+          -0.0435379259288311,
+          -0.01360856182873249,
+          -0.0033511174842715263,
+          0.03760187327861786
+        ],
+        "std": [
+          1.0767803192138672,
+          1.0186489820480347,
+          1.0424320697784424,
+          1.0119824409484863,
+          0.9596695899963379
+        ]
+      },
+      "runtime_sec": 3.3066530227661133,
+      "final_loss": 0.4303358793258667,
+      "final_vloss": 0.3654111623764038,
+      "final_gloss": 0.06492471694946289,
+      "n_loss_steps": 5
+    },
+    {
+      "setting": "equal_depth",
+      "seed": 42,
+      "n_train_cells": 400,
+      "train_timepoint_counts": {
+        "0": 80,
+        "1": 80,
+        "2": 80,
+        "3": 80,
+        "4": 80
+      },
+      "normalization": {
+        "mean": [
+          0.07348504662513733,
+          -0.0661330446600914,
+          -0.03198323771357536,
+          0.041755639016628265,
+          0.004074033349752426
+        ],
+        "std": [
+          0.9557104706764221,
+          1.0209541320800781,
+          0.964217483997345,
+          1.0565283298492432,
+          0.973652184009552
+        ]
+      },
+      "runtime_sec": 0.8085072040557861,
+      "final_loss": 0.44652900099754333,
+      "final_vloss": 0.3780844807624817,
+      "final_gloss": 0.06844452023506165,
+      "n_loss_steps": 5
+    }
+  ],
+  "relative_mass_audit": "WFR-FM experiment_runner.compute_relative_mass(df) computes per-timepoint sample-size ratios and passes them to pretrain(..., relative_mass=...). train.pretrain forwards this object to utils.get_batch as the argument named ratios, but utils.get_batch never reads ratios; compute_uot_plans also sets source and target masses a and b to ones. Therefore, in the audited source, compute_relative_mass does not affect training.",
+  "caveats": [
+    "This is an algorithm-level sensitivity diagnostic, not a claim that WFR-FM is wrong.",
+    "EB observed snapshot cell counts are treated as sampling-depth proxies, not calibrated biological census.",
+    "Without calibrated census, proliferation, apoptosis, or lineage evidence, inferred growth is a model-dependent hypothesis.",
+    "Smoke/quick settings trade estimator stability for runtime."
+  ],
+  "outputs": {
+    "growth_by_bin_csv": "/import/home4/xmabs/flow_matching_for_dynamic_biology/flow_matching_for_dynamic_biology/outputs/ch04/table4_6c_wfrfm_growth_by_bin.csv",
+    "sensitivity_csv": "/import/home4/xmabs/flow_matching_for_dynamic_biology/flow_matching_for_dynamic_biology/outputs/ch04/table4_6d_wfrfm_sampling_sensitivity.csv",
+    "figure_png": "/import/home4/xmabs/flow_matching_for_dynamic_biology/flow_matching_for_dynamic_biology/figures/ch04/fig4_11d_wfrfm_growth_sensitivity.png"
+  }
+}

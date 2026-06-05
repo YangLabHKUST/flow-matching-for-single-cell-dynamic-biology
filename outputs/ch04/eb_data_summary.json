@@ -1,0 +1,58 @@
+{
+  "adaptation_note": "Input pcs has 100 columns; this chapter uses the first 20 PCs as PC-20.",
+  "available_keys": [
+    "pcs",
+    "phate",
+    "delta_embedding",
+    "color",
+    "ixs",
+    "sample_labels",
+    "pcs_delta"
+  ],
+  "display_space": "PHATE 2D only for visualization",
+  "distributional_metrics_space": "standardized PC-20",
+  "n_source_full": 4163,
+  "n_source_used": 4163,
+  "n_target_full": 3278,
+  "n_target_used": 3278,
+  "ot_cost_space": "standardized PC-20 unless Exp 7 contrastive diagnostic",
+  "pc20_shape_used": [
+    16819,
+    20
+  ],
+  "pcs_shape_actual": [
+    16819,
+    100
+  ],
+  "phate_shape": [
+    16819,
+    2
+  ],
+  "sample_label_values": [
+    {
+      "n_cells": 2381,
+      "time": "0"
+    },
+    {
+      "n_cells": 4163,
+      "time": "1"
+    },
+    {
+      "n_cells": 3278,
+      "time": "2"
+    },
+    {
+      "n_cells": 3665,
+      "time": "3"
+    },
+    {
+      "n_cells": 3332,
+      "time": "4"
+    }
+  ],
+  "source_path": "/home/xmabs/flow_matching_for_dynamic_biology/flow_matching_for_dynamic_biology/data/trajectorynet_eb/eb_velocity_v5.npz",
+  "source_time": "1",
+  "standardization": "mean/std fit on all EB snapshots in PC-20",
+  "target_time": "2",
+  "training_space": "standardized PC-20 from pcs[:, :20]"
+}

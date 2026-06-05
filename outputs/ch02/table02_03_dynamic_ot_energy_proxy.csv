@@ -1,0 +1,3 @@
+path_family,energy_proxy,mean_path_length_pc20,n_pairs,n_steps,notes
+straight_pc20,204.62544872616724,13.46265239688229,20,41,Straight PC-20 bridge for the same sampled OT endpoint pairs.
+detour_perpendicular_pc20,772.3382200447033,25.121004484284317,20,41,Fixed perpendicular perturbation in PC-20; endpoints and coupling unchanged.

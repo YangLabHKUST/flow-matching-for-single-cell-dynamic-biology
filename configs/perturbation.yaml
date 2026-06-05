@@ -1,0 +1,4 @@
+seed: 42
+quick_mode: true
+output_dir: outputs
+figure_dir: figures

@@ -1,0 +1,6 @@
+time,n_cells,condition,major_count,rare_count,rare_fraction
+0.0,800,control,0,0,0.0
+0.25,800,control,0,0,0.0
+0.5,800,control,714,86,0.1075
+0.75,800,control,707,93,0.11625
+1.0,800,control,688,112,0.14

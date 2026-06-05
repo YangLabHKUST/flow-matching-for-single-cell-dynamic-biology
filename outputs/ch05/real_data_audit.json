@@ -1,0 +1,71 @@
+{
+  "K_compounds": 8,
+  "compound_list": [
+    "AG-14361",
+    "AG-490 (Tyrphostin B42)",
+    "Alisertib (MLN8237)",
+    "Altretamine",
+    "Aminoglutethimide",
+    "Amisulpride",
+    "Andarine",
+    "Azacitidine"
+  ],
+  "dose_values": [
+    10.0,
+    100.0,
+    1000.0,
+    10000.0
+  ],
+  "is_synthetic": false,
+  "missing_smiles_count": 0,
+  "obs_schema_used": {
+    "cell_line": "cell_line",
+    "compound": "perturbation",
+    "dose": "dose_value",
+    "smiles": "LINCS GSE92742 pert_iname/canonical_smiles map",
+    "vehicle": "perturbation == control or dose_value == 0"
+  },
+  "source": "scPerturb SrivatsanTrapnell2020_sciplex3.h5ad",
+  "source_url": "https://zenodo.org/api/records/13350497/files/SrivatsanTrapnell2020_sciplex3.h5ad/content",
+  "split_counts": [
+    {
+      "K_compounds": 8,
+      "n_cells": 1892,
+      "n_doses": 1,
+      "n_treated": 1892,
+      "n_vehicle": 0,
+      "split": "test",
+      "split_name": "Split B held-out highest dose"
+    },
+    {
+      "K_compounds": 8,
+      "n_cells": 5964,
+      "n_doses": 3,
+      "n_treated": 5714,
+      "n_vehicle": 250,
+      "split": "train",
+      "split_name": "Split B held-out highest dose"
+    },
+    {
+      "K_compounds": 1,
+      "n_cells": 1000,
+      "n_doses": 4,
+      "n_treated": 1000,
+      "n_vehicle": 0,
+      "split": "test",
+      "split_name": "Split C held-out compound"
+    },
+    {
+      "K_compounds": 7,
+      "n_cells": 6856,
+      "n_doses": 4,
+      "n_treated": 6606,
+      "n_vehicle": 250,
+      "split": "train",
+      "split_name": "Split C held-out compound"
+    }
+  ],
+  "status": "ok",
+  "subset_rule": "A549 only; compounds with LINCS SMILES, doses 10/100/1000/10000 nM, >=200 cells per compound-dose; sorted by compound name; first 8 compounds; at most 250 cells per compound-dose and 250 vehicle cells sampled with fixed seed.",
+  "vehicle_count": 250
+}

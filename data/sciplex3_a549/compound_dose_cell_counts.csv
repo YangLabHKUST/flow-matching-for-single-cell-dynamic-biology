@@ -1,0 +1,34 @@
+compound,dose,is_vehicle,n_cells
+DMSO,0.0,True,250
+AG-14361,10.0,False,250
+AG-14361,100.0,False,250
+AG-14361,1000.0,False,209
+AG-14361,10000.0,False,233
+AG-490 (Tyrphostin B42),10.0,False,207
+AG-490 (Tyrphostin B42),100.0,False,250
+AG-490 (Tyrphostin B42),1000.0,False,205
+AG-490 (Tyrphostin B42),10000.0,False,212
+Alisertib (MLN8237),10.0,False,250
+Alisertib (MLN8237),100.0,False,250
+Alisertib (MLN8237),1000.0,False,250
+Alisertib (MLN8237),10000.0,False,250
+Altretamine,10.0,False,250
+Altretamine,100.0,False,250
+Altretamine,1000.0,False,250
+Altretamine,10000.0,False,243
+Aminoglutethimide,10.0,False,250
+Aminoglutethimide,100.0,False,208
+Aminoglutethimide,1000.0,False,250
+Aminoglutethimide,10000.0,False,225
+Amisulpride,10.0,False,243
+Amisulpride,100.0,False,201
+Amisulpride,1000.0,False,237
+Amisulpride,10000.0,False,229
+Andarine,10.0,False,250
+Andarine,100.0,False,225
+Andarine,1000.0,False,229
+Andarine,10000.0,False,250
+Azacitidine,10.0,False,250
+Azacitidine,100.0,False,250
+Azacitidine,1000.0,False,250
+Azacitidine,10000.0,False,250

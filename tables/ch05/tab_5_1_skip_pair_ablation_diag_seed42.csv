@@ -1,0 +1,17 @@
+experiment,seed,variant,variant_family,boundary,training_steps_total,sampling,velocity_jump_mean_l2
+EB skip-pair ablation,42,shared_adjacent_only_6000,adjacent_only,t1,6000,uniform,7.9688944816589355
+EB skip-pair ablation,42,shared_adjacent_only_6000,adjacent_only,t3,6000,uniform,5.9298319816589355
+EB skip-pair ablation,42,shared_adjacent_only_9000,adjacent_only,t1,9000,uniform,9.66170883178711
+EB skip-pair ablation,42,shared_adjacent_only_9000,adjacent_only,t3,9000,uniform,6.618371486663818
+EB skip-pair ablation,42,shared_adjacent_only_12000,adjacent_only,t1,12000,uniform,13.959906578063965
+EB skip-pair ablation,42,shared_adjacent_only_12000,adjacent_only,t3,12000,uniform,9.079687118530273
+EB skip-pair ablation,42,shared_skip_uniform_6000,skip,t1,6000,uniform,5.831440448760986
+EB skip-pair ablation,42,shared_skip_uniform_6000,skip,t3,6000,uniform,2.080883264541626
+EB skip-pair ablation,42,shared_skip_uniform_12000,skip,t1,12000,uniform,8.572406768798828
+EB skip-pair ablation,42,shared_skip_uniform_12000,skip,t3,12000,uniform,4.197951793670654
+EB skip-pair ablation,42,shared_skip_adj2_skip1_9000,skip,t1,9000,adjacent_total_2_3_skip_total_1_3,8.850123405456543
+EB skip-pair ablation,42,shared_skip_adj2_skip1_9000,skip,t3,9000,adjacent_total_2_3_skip_total_1_3,4.551985263824463
+EB skip-pair ablation,42,shared_skip_adj3_skip1_8000,skip,t1,8000,adjacent_total_3_4_skip_total_1_4,8.264241218566895
+EB skip-pair ablation,42,shared_skip_adj3_skip1_8000,skip,t3,8000,adjacent_total_3_4_skip_total_1_4,4.229421615600586
+EB skip-pair ablation,42,shared_skip_medium_only_9000,skip,t1,9000,adjacent_total_2_3_medium_skip_total_1_3,8.862281799316406
+EB skip-pair ablation,42,shared_skip_medium_only_9000,skip,t3,9000,adjacent_total_2_3_medium_skip_total_1_3,4.854036331176758

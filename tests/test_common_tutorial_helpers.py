@@ -1,0 +1,86 @@
+from __future__ import annotations
+
+from pathlib import Path
+
+import numpy as np
+import pandas as pd
+import pytest
+
+
+def test_artifact_helpers_roundtrip_json_csv_npz_and_scalars(tmp_path):
+    from src.artifacts import json_ready, load_json, load_npz, save_csv, save_json, save_npz
+
+    payload = {
+        "path": Path("figures/example.png"),
+        "scalar": np.float32(1.25),
+        "array": np.asarray([1, 2, 3], dtype=np.int64),
+        "frame": pd.DataFrame({"x": [1, 2], "y": [3.5, 4.5]}),
+    }
+
+    ready = json_ready(payload)
+    assert ready == {
+        "path": "figures/example.png",
+        "scalar": pytest.approx(1.25),
+        "array": [1, 2, 3],
+        "frame": [{"x": 1, "y": 3.5}, {"x": 2, "y": 4.5}],
+    }
+
+    json_path = save_json(tmp_path / "nested" / "payload.json", payload)
+    assert load_json(json_path)["array"] == [1, 2, 3]
+
+    csv_path = save_csv(tmp_path / "tables" / "table.csv", payload["frame"])
+    assert pd.read_csv(csv_path).to_dict(orient="list") == {"x": [1, 2], "y": [3.5, 4.5]}
+
+    npz_path = save_npz(tmp_path / "cache" / "arrays.npz", values=np.asarray([4, 5], dtype=np.float32))
+    with load_npz(npz_path) as loaded:
+        np.testing.assert_allclose(loaded["values"], np.asarray([4, 5], dtype=np.float32))
+
+
+def test_artifact_helpers_validate_arrays_paths_and_hashes(tmp_path):
+    from src.artifacts import artifact_exists, ensure_finite, sample_rows, stable_hash
+
+    existing = tmp_path / "nonempty.txt"
+    existing.write_text("x")
+    empty = tmp_path / "empty.txt"
+    empty.write_text("")
+
+    assert artifact_exists(existing)
+    assert not artifact_exists(empty)
+    assert not artifact_exists(tmp_path / "missing.txt")
+
+    np.testing.assert_array_equal(sample_rows(5, None, seed=7), np.arange(5))
+    np.testing.assert_array_equal(sample_rows(10, 4, seed=7), np.asarray([5, 6, 8, 9]))
+    assert stable_hash("a", 1, Path("b")) == "8b0646ff98"
+
+    ensure_finite("ok", np.asarray([0.0, 1.0]))
+    with pytest.raises(ValueError, match="bad contains non-finite values"):
+        ensure_finite("bad", np.asarray([np.nan]))
+
+
+def test_flow_runtime_euler_helpers_preserve_zero_velocity():
+    torch = pytest.importorskip("torch")
+
+    from src.flow_runtime import coarse_step_error, make_time_batch, rollout_euler, trajectory_rollout
+
+    class ZeroVelocity(torch.nn.Module):
+        def forward(self, x, t):
+            return torch.zeros_like(x)
+
+    model = ZeroVelocity()
+    x0 = np.asarray([[1.0, 2.0], [3.0, 4.0]], dtype=np.float32)
+
+    batch_t = make_time_batch(3, device=torch.device("cpu"))
+    assert batch_t.shape == (3, 1)
+    assert batch_t.device.type == "cpu"
+
+    endpoint = rollout_euler(model, x0, nfe=4, device=torch.device("cpu"))
+    np.testing.assert_allclose(endpoint, x0)
+
+    endpoint2, traj, times = trajectory_rollout(model, x0, nfe=4, device=torch.device("cpu"))
+    np.testing.assert_allclose(endpoint2, x0)
+    assert traj.shape == (5, 2, 2)
+    np.testing.assert_allclose(traj[0], x0)
+    np.testing.assert_allclose(traj[-1], x0)
+    np.testing.assert_allclose(times, np.linspace(0.0, 1.0, 5))
+
+    assert coarse_step_error(model, x0, nfe_coarse=2, nfe_fine=4, device=torch.device("cpu")) == 0.0

@@ -1,0 +1,27 @@
+# Python/runtime artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Local environments and editor state
+.env
+.venv/
+venv/
+env/
+.DS_Store
+
+# Large local datasets. Keep dataset cards and small tabular examples tracked.
+data/**/*.h5ad
+data/**/*.npz
+data/**/*.zip
+data/**/raw/
+
+# Generated caches, checkpoints, and executed notebook copies.
+outputs/**/cache/
+outputs/**/quarantine*/
+outputs/**/*.npz
+outputs/**/*.pt
+outputs/**/*.pth
+outputs/**/*.log
+outputs/**/*.executed.ipynb
