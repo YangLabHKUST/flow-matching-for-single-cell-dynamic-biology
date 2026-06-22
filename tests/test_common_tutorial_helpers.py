@@ -113,7 +113,7 @@ def test_artifact_helpers_resolve_and_remember_sources(tmp_path):
 def test_flow_runtime_euler_helpers_preserve_zero_velocity():
     torch = pytest.importorskip("torch")
 
-    from src.flow_runtime import coarse_step_error, make_time_batch, rollout_euler, trajectory_rollout
+    from src.experiments.flow_runtime import coarse_step_error, make_time_batch, rollout_euler, trajectory_rollout
 
     class ZeroVelocity(torch.nn.Module):
         def forward(self, x, t):

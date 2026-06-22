@@ -16,10 +16,15 @@ ARCHIVED_MONOLITH_PATH = (
     / "03_flow_matching_from_scratch.ipynb"
 )
 RETIRED_INDEX_PATH = PROJECT_ROOT / "archive" / "03_flow_matching_from_scratch.ipynb"
+CH03_TOY_NOTEBOOK = "chapter3_1_flow_matching_from_scratch.ipynb"
+CH03_EB_MAIN_RETIRED_NOTEBOOK = "03_2_eb20d_main_flow_matching.ipynb"
+CH03_EB_MAIN_NOTEBOOK = "chapter3_2_eb_flow_matching.ipynb"
+CH03_EB_ABLATION_RETIRED_NOTEBOOK = "03_3_eb20d_baselines_ablations_and_claim_audit.ipynb"
+CH03_EB_ABLATION_NOTEBOOK = "chapter3_3_eb_ablations.ipynb"
 
 
 SPLIT_SPECS = {
-    "03_1_toy_flow_matching_from_scratch.ipynb": {
+    CH03_TOY_NOTEBOOK: {
         "min_code_cells": 18,
         "required_headings": [
             "2D Toy Sanity Check",
@@ -27,6 +32,7 @@ SPLIT_SPECS = {
             "CFM Object Hierarchy",
         ],
         "required_artifacts": [
+            "fig_toy_endpoint_distributions.png",
             "fig_toy_loss.png",
             "fig_toy_evolution.png",
             "fig03_02_conditional_vs_marginal_toy.png",
@@ -38,7 +44,7 @@ SPLIT_SPECS = {
             "Time Sampling Strategy Ablation",
         ],
     },
-    "03_2_eb20d_main_flow_matching.ipynb": {
+    CH03_EB_MAIN_NOTEBOOK: {
         "min_code_cells": 19,
         "required_headings": [
             "Data audit",
@@ -72,19 +78,19 @@ SPLIT_SPECS = {
             "Network Capacity Ablation",
         ],
     },
-    "03_3_eb20d_baselines_ablations_and_claim_audit.ipynb": {
+    CH03_EB_ABLATION_NOTEBOOK: {
         "min_code_cells": 24,
         "required_headings": [
             "Solver Comparison Lite",
-            "CNF-Endpoint Baseline",
+            "ODE-in-the-loop Training Cost",
             "Time Sampling Strategy Ablation",
             "Network Capacity Ablation",
             "Trajectory Straightness in 20D",
         ],
         "required_artifacts": [
             "fig03_10_nfe_vs_endpoint_error.png",
-            "figE1_cfm_vs_cnf_endpoint_samples_phate.png",
-            "figE1_cfm_vs_cnf_endpoint_training_cost.png",
+            "figE1_fm_vs_cnf_compute_quality.png",
+            "figE1_fm_vs_cnf_cumulative_time.png",
             "figE2_capacity_endpoint_mmd.png",
             "figE2_capacity_val_mse.png",
             "figE3_time_sampling_distributions.png",
@@ -118,6 +124,9 @@ SPLIT_SPECS = {
         "forbidden_headings": [
             "2D Toy Sanity Check",
             "Train EB 20D VelocityMLP",
+            "Configuration table",
+            "Metrics table",
+            "Claim boundary",
         ],
     },
 }
@@ -149,6 +158,18 @@ def _artifact_referenced(text: str, artifact: str) -> bool:
     return stem != artifact and stem in text
 
 
+def test_ch03_canonical_replacements_exist_and_retired_active_copies_are_removed():
+    replacements = {
+        "03_1_toy_flow_matching_from_scratch.ipynb": CH03_TOY_NOTEBOOK,
+        CH03_EB_MAIN_RETIRED_NOTEBOOK: CH03_EB_MAIN_NOTEBOOK,
+        CH03_EB_ABLATION_RETIRED_NOTEBOOK: CH03_EB_ABLATION_NOTEBOOK,
+    }
+
+    for retired_name, replacement_name in replacements.items():
+        assert not (PROJECT_ROOT / "notebooks" / retired_name).exists(), retired_name
+        assert (PROJECT_ROOT / "notebooks" / replacement_name).exists(), replacement_name
+
+
 def test_ch03_split_notebooks_exist_and_are_tutorial_sized():
     for filename, spec in SPLIT_SPECS.items():
         payload = _payload(filename)
@@ -165,6 +186,12 @@ def test_ch03_split_notebooks_exist_and_are_tutorial_sized():
         for heading in spec["forbidden_headings"]:
             assert heading not in markdown_text, (filename, heading)
         for index, source in enumerate(code_sources, 1):
+            if filename == CH03_TOY_NOTEBOOK:
+                assert source.strip(), (filename, index)
+                assert not all(
+                    line.strip().startswith("#") or not line.strip()
+                    for line in source.splitlines()
+                ), (filename, index)
             compile(source, f"{filename}:code-cell-{index}", "exec")
 
 
@@ -176,15 +203,22 @@ def test_ch03_split_notebooks_cover_artifacts_without_overlap():
         markdown_text = "\n".join(_sources(filename, "markdown"))
         notebook_text = code_text + "\n" + markdown_text
 
-        assert "from IPython.display import Image, display" in code_text, filename
-        assert "raise FileNotFoundError" in code_text, filename
-        assert "display_table(" in code_text, filename
+        assert "from src.tutorial_init import" in code_text, filename
+        assert "make_ch03_run_config()" in code_text, filename
+        assert "make_save_and_show(" in code_text, filename
+        if filename == CH03_TOY_NOTEBOOK:
+            assert "raise FileNotFoundError" not in code_text, filename
+        else:
+            assert "make_save_and_show(" in code_text, filename
+        if filename != CH03_TOY_NOTEBOOK:
+            assert "display_table(" in code_text, filename
 
         display_markers = [
             "display(Image(",
             "display_saved_figure(",
             "display_saved_figures(",
             "display_png(",
+            "make_save_and_show(",
         ]
         assert any(marker in code_text for marker in display_markers), filename
 
@@ -225,7 +259,7 @@ def test_ch03_required_outputs_remain_referenced_after_manifest_removal():
 
 
 def test_ch03_shared_tutorial_helpers_are_generic(tmp_path):
-    from src import flow_matching_reporting as tutorial
+    from src.visualization import flow_matching as tutorial
 
     for name in [
         "json_ready",
@@ -255,7 +289,7 @@ def test_ch03_toy_helpers_are_extracted_and_callable():
     torch = pytest.importorskip("torch")
     import matplotlib.pyplot as plt
 
-    from src import flow_matching_reporting as tutorial
+    from src.visualization import flow_matching as tutorial
 
     X0, components = tutorial.make_eight_gaussians(n=96, seed=11)
     X1 = tutorial.make_single_gaussian(n=96, seed=12)
@@ -290,12 +324,17 @@ def test_ch03_toy_helpers_are_extracted_and_callable():
     fig2 = tutorial.plot_toy_cfm_object_hierarchy(X0, X1, hierarchy)
     assert len(fig.axes) == 1
     assert len(fig2.axes) == 3
+    legend = fig.axes[0].get_legend()
+    assert legend is not None
+    anchor_x0 = legend.get_bbox_to_anchor().transformed(fig.transFigure.inverted()).x0
+    axis_x1 = fig.axes[0].get_position().x1
+    assert anchor_x0 > axis_x1
     plt.close(fig)
     plt.close(fig2)
 
 
 def test_ch03_toy_notebook_calls_extracted_helpers():
-    code_text = "\n".join(_sources("03_1_toy_flow_matching_from_scratch.ipynb", "code"))
+    code_text = "\n".join(_sources(CH03_TOY_NOTEBOOK, "code"))
 
     for local_definition in [
         "def save_figure(",
@@ -314,7 +353,7 @@ def test_ch03_toy_notebook_calls_extracted_helpers():
         assert local_definition not in code_text, local_definition
 
     for helper_call in [
-        "ch03.save_and_close_figure(",
+        "make_save_and_show(",
         "ch03.make_eight_gaussians(",
         "ch03.make_single_gaussian(",
         "ch03.make_random_pair_batch_fn(",
@@ -326,11 +365,102 @@ def test_ch03_toy_notebook_calls_extracted_helpers():
         assert helper_call in code_text, helper_call
 
 
+def test_ch03_toy_notebook_keeps_reader_facing_outputs_clean():
+    payload = _payload(CH03_TOY_NOTEBOOK)
+    code_sources = _sources(CH03_TOY_NOTEBOOK, "code")
+    code_text = "\n".join(code_sources)
+    markdown_text = "\n".join(_sources(CH03_TOY_NOTEBOOK, "markdown"))
+
+    assert "def find_project_root(" not in code_text
+    assert "bootstrap(" in code_text
+    assert '{"setting": "project_root"' not in code_text
+    assert "display_table(run_mode" not in code_text
+    assert "display_table(artifact_manifest" not in code_text
+    assert "expected_png_figures" not in code_text
+    assert "artifact_manifest" not in code_text
+    assert "Final artifact audit" not in markdown_text
+    assert "Artifact validation" not in markdown_text
+
+    setup_outputs = payload["cells"][3].get("outputs", [])
+    assert len(setup_outputs) <= 1
+    assert all("text/html" not in (output.get("data") or {}) for output in setup_outputs)
+
+
+def test_ch03_toy_notebook_uses_compact_figure_and_summary_cells():
+    payload = _payload(CH03_TOY_NOTEBOOK)
+    code_sources = _sources(CH03_TOY_NOTEBOOK, "code")
+    code_text = "\n".join(code_sources)
+    markdown_text = "\n".join(_sources(CH03_TOY_NOTEBOOK, "markdown"))
+
+    assert len(payload["cells"]) <= 33
+    assert code_text.count("ch03.save_and_close_figure(") == 0
+    assert code_text.count("save_and_show(") == 6
+    assert "save_and_show = make_save_and_show(" in code_text
+
+    for noisy_name in [
+        "toy_design = pd.DataFrame",
+        "model_summary = pd.DataFrame",
+        "sampling_design = pd.DataFrame",
+        "trajectory_summary = pd.DataFrame",
+        "velocity_probe_summary = pd.DataFrame",
+        "hierarchy_preview = pd.DataFrame",
+    ]:
+        assert noisy_name not in code_text, noisy_name
+
+    assert "step / n_steps" in code_text
+    assert "nfe = 0" not in code_text
+    assert "nfe * dt" not in code_text
+    assert "return x, traj, int(n_steps)" in code_text
+
+    markdown_lower = markdown_text.lower()
+    for teaching_phrase in [
+        "multi-modal source",
+        "conditional velocity is constant",
+        "training never integrates this ODE",
+        "paper Figure 3.2",
+        "Panel A",
+    ]:
+        assert teaching_phrase.lower() in markdown_lower, teaching_phrase
+
+
+def test_ch03_toy_notebook_teaches_core_cfm_inline():
+    code_text = "\n".join(_sources(CH03_TOY_NOTEBOOK, "code"))
+
+    hidden_core_paths = [
+        "from src.core.train import train_cfm_steps",
+        "train_cfm_steps(",
+        "from src.core.losses import cfm_loss_from_pairs",
+        "cfm_loss_from_pairs(",
+        "from src.core.sampling import euler_sample",
+        "euler_sample(",
+    ]
+    for hidden_path in hidden_core_paths:
+        assert hidden_path not in code_text, hidden_path
+
+    inline_fragments = [
+        "def make_cfm_batch(",
+        "x_t = (1.0 - t) * x0 + t * x1",
+        "target_velocity = x1 - x0",
+        "def cfm_loss_from_batch(",
+        "pred_velocity = model(batch[\"x_t\"], batch[\"t\"])",
+        "torch.mean((pred_velocity - batch[\"target_velocity\"]) ** 2)",
+        "for step in range(",
+        "optimizer.zero_grad(",
+        "loss.backward()",
+        "optimizer.step()",
+        "def euler_rollout(",
+        "dt = 1.0 / n_steps",
+        "x = x + dt * velocity",
+    ]
+    for fragment in inline_fragments:
+        assert fragment in code_text, fragment
+
+
 def test_ch03_eb20d_main_helpers_are_extracted_and_callable():
     torch = pytest.importorskip("torch")
     import matplotlib.pyplot as plt
 
-    from src import flow_matching_reporting as tutorial
+    from src.visualization import flow_matching as tutorial
 
     X0 = np.linspace(-1.0, 1.0, 80, dtype=np.float32).reshape(20, 4)
     X1 = X0 + 0.5
@@ -376,7 +506,7 @@ def test_ch03_eb20d_main_helpers_are_extracted_and_callable():
 
 
 def test_ch03_eb20d_main_notebook_calls_extracted_helpers():
-    code_text = "\n".join(_sources("03_2_eb20d_main_flow_matching.ipynb", "code"))
+    code_text = "\n".join(_sources(CH03_EB_MAIN_NOTEBOOK, "code"))
 
     for local_definition in [
         "def save_figure(",
@@ -395,7 +525,7 @@ def test_ch03_eb20d_main_notebook_calls_extracted_helpers():
         assert local_definition not in code_text, local_definition
 
     for helper_call in [
-        "ch03.save_and_close_figure(",
+        "make_save_and_show(",
         "ch03.train_val_indices(",
         "ch03.make_random_pair_batch_fn(",
         "ch03.val_cfm_mse(",
@@ -404,11 +534,98 @@ def test_ch03_eb20d_main_notebook_calls_extracted_helpers():
         assert helper_call in code_text, helper_call
 
 
+def test_ch03_eb20d_main_notebook_keeps_reader_facing_outputs_clean():
+    payload = _payload(CH03_EB_MAIN_NOTEBOOK)
+    code_sources = _sources(CH03_EB_MAIN_NOTEBOOK, "code")
+    code_text = "\n".join(code_sources)
+    markdown_text = "\n".join(_sources(CH03_EB_MAIN_NOTEBOOK, "markdown"))
+
+    assert len(payload["cells"]) <= 34
+    assert "artifact_locations" not in code_text
+    assert "artifact_manifest" not in code_text
+    assert "Final artifact audit" not in markdown_text
+    assert "Artifact validation" not in markdown_text
+
+    for noisy_name in [
+        "model_config_table = pd.DataFrame",
+        "validation_plan = pd.DataFrame",
+        "sampling_plan = pd.DataFrame",
+        "model_cache_table = pd.DataFrame",
+        "data_audit = pd.DataFrame",
+        "pairing_table = pd.DataFrame",
+    ]:
+        assert noisy_name not in code_text, noisy_name
+
+    for noisy_display in [
+        "display_table(artifact_locations",
+        "display_table(model_config_table",
+        "display_table(validation_plan",
+        "display_table(sampling_plan",
+        "display_table(model_cache_table",
+        "display_table(data_audit",
+        "display_table(split_table",
+        "display_table(pairing_table",
+    ]:
+        assert noisy_display not in code_text, noisy_display
+
+    assert "ch03.save_csv(TABLE_DIR / \"ch03_eb20d_train_val_split.csv\", split_table)" in code_text
+    assert "X_cost shape=" in code_text
+    assert "source train/val=" in code_text
+    assert "Training pairs draw fresh independent endpoints" in code_text
+    assert code_text.count("save_and_show(") == 5
+    assert "save_and_show = make_save_and_show(" in code_text
+
+
+def test_ch03_eb20d_main_notebook_teaches_core_cfm_inline():
+    code_text = "\n".join(_sources(CH03_EB_MAIN_NOTEBOOK, "code"))
+    markdown_text = "\n".join(_sources(CH03_EB_MAIN_NOTEBOOK, "markdown")).lower()
+
+    hidden_core_paths = [
+        "from src.core.losses import cfm_loss_from_pairs",
+        "cfm_loss_from_pairs(",
+        "from src.core.sampling import euler_sample",
+        "euler_sample(",
+    ]
+    for hidden_path in hidden_core_paths:
+        assert hidden_path not in code_text, hidden_path
+
+    inline_fragments = [
+        "def make_cfm_batch(",
+        "x_t = (1.0 - t) * x0 + t * x1",
+        "target_velocity = x1 - x0",
+        "def cfm_loss_from_batch(",
+        "pred_velocity = model(batch[\"x_t\"], batch[\"t\"])",
+        "((pred_velocity - batch[\"target_velocity\"]) ** 2).mean(dim=-1).mean()",
+        "for step in range(1, eb_steps + 1):",
+        "optimizer.zero_grad(",
+        "loss.backward()",
+        "optimizer.step()",
+        "def euler_rollout(",
+        "times = torch.linspace(0.0, 1.0, n_steps + 1",
+        "dt = times[step + 1] - times[step]",
+        "x = x + dt * velocity",
+    ]
+    for fragment in inline_fragments:
+        assert fragment in code_text, fragment
+
+    for teaching_phrase in [
+        "20d pc space",
+        "phate is display-only",
+        "endpoint pairs",
+        "population evolution",
+        "Euler step count",
+    ]:
+        assert teaching_phrase.lower() in markdown_text, teaching_phrase
+
+    assert "paper figure" not in markdown_text
+    assert "figure 3." not in markdown_text
+
+
 def test_ch03_eb20d_ablation_helpers_are_extracted_and_callable(tmp_path):
     torch = pytest.importorskip("torch")
     import matplotlib.pyplot as plt
 
-    from src import flow_matching_reporting as tutorial
+    from src.visualization import flow_matching as tutorial
 
     context = tutorial.Ch03Context(
         project_root=tmp_path,
@@ -478,9 +695,22 @@ def test_ch03_eb20d_ablation_helpers_are_extracted_and_callable(tmp_path):
     ode_func.reset_nfe()
     assert ode_func.nfe == 0
 
+    solver_table = pd.DataFrame(
+        [
+            {"sampler": "euler", "nfe": 10, "mmd_20d": 0.42},
+            {"sampler": "euler", "nfe": 20, "mmd_20d": 0.31},
+            {"sampler": "dopri5", "nfe": 17, "mmd_20d": 0.29},
+        ]
+    )
+    fig, ax = tutorial.plot_nfe_vs_error(solver_table, y="mmd_20d")
+    assert ax.get_xlabel() == "number of function evaluations (NFE)"
+    assert ax.get_ylabel() == "mmd 20d"
+    assert len(ax.lines) == 2
+    plt.close(fig)
+
 
 def test_format_solver_diagnostics_paper_table_rounds_and_labels():
-    from src import flow_matching_reporting as tutorial
+    from src.visualization import flow_matching as tutorial
 
     solver_table = pd.DataFrame(
         [
@@ -540,7 +770,7 @@ def test_format_solver_diagnostics_paper_table_rounds_and_labels():
 
 
 def test_ch03_eb20d_ablation_notebook_calls_extracted_helpers():
-    code_text = "\n".join(_sources("03_3_eb20d_baselines_ablations_and_claim_audit.ipynb", "code"))
+    code_text = "\n".join(_sources(CH03_EB_ABLATION_NOTEBOOK, "code"))
 
     for local_definition in [
         "def _round_float(",
@@ -570,8 +800,8 @@ def test_ch03_eb20d_ablation_notebook_calls_extracted_helpers():
 
     for helper_call in [
         "ch03.Ch03ArtifactTracker(",
-        "tracker.save_figure(",
-        "tracker.save_paper_table(",
+            "make_save_and_show(",
+            "tracker.save_paper_table(",
         "ch03.train_val_indices(",
         "ch03.make_random_pair_batch_fn(",
         "ch03.val_cfm_mse(",
@@ -584,6 +814,65 @@ def test_ch03_eb20d_ablation_notebook_calls_extracted_helpers():
         "ch03.format_solver_diagnostics_paper_table(",
     ]:
         assert helper_call in code_text, helper_call
+
+    assert "from src.plots import" not in code_text
+    assert "ch03.plot_nfe_vs_error(" in code_text
+
+
+def test_ch03_eb20d_ablation_notebook_keeps_reader_facing_outputs_clean():
+    payload = _payload(CH03_EB_ABLATION_NOTEBOOK)
+    code_sources = _sources(CH03_EB_ABLATION_NOTEBOOK, "code")
+    code_text = "\n".join(code_sources)
+    markdown_text = "\n".join(_sources(CH03_EB_ABLATION_NOTEBOOK, "markdown"))
+
+    assert len(payload["cells"]) <= 65
+    assert "artifact_manifest" not in code_text
+    assert "Final artifact audit" not in markdown_text
+    assert "Artifact validation" not in markdown_text
+
+    for index, source in enumerate(code_sources, 1):
+        assert source.strip(), (CH03_EB_ABLATION_NOTEBOOK, index)
+        assert not all(
+            line.strip().startswith("#") or not line.strip()
+            for line in source.splitlines()
+        ), (CH03_EB_ABLATION_NOTEBOOK, index)
+
+    for noisy_heading in [
+        "### Question",
+        "### Configuration table",
+        "### Run",
+        "### Metrics table",
+        "### Figure",
+        "### Claim boundary",
+    ]:
+        assert noisy_heading not in markdown_text, noisy_heading
+
+    for noisy_config_display in [
+        "tracker.display_table(solver_config",
+        "tracker.display_table(E1_config",
+        "tracker.display_table(time_config",
+        "tracker.display_table(capacity_config_table",
+        "tracker.display_table(straight_config",
+    ]:
+        assert noisy_config_display not in code_text, noisy_config_display
+
+    for explanatory_print in [
+        "solver settings:",
+        "ODE-in-loop cost benchmark:",
+        "time-sampling strategies:",
+        "capacity configs:",
+        "straightness diagnostic:",
+    ]:
+        assert explanatory_print in code_text, explanatory_print
+
+    assert "figE1_cfm_vs_cnf_endpoint_training_cost" not in code_text
+    assert "figE1_cfm_vs_cnf_endpoint_samples_phate" not in code_text
+    assert "val_endpoint_mmd_20d" not in code_text
+    assert "fixed_ot_pairs" in code_text
+    assert "relative_slowdown_vs_fm" in code_text
+
+    assert "save_and_show(" in code_text
+    assert "save_and_show = make_save_and_show(" in code_text
 
 
 def test_old_ch03_monolith_is_retired_index_only():

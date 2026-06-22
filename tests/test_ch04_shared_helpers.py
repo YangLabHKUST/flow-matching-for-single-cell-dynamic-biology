@@ -5,7 +5,7 @@ import pytest
 
 
 def test_ch04_metric_aliases_match_notebook_behaviour():
-    from src.metrics import (
+    from src.evaluation.metrics import (
         effective_support,
         evaluate_endpoint,
         path_energy,
@@ -44,8 +44,8 @@ def test_ch04_metric_aliases_match_notebook_behaviour():
 
 
 def test_ch04_coupling_helpers_match_notebook_behaviour():
-    from src.metrics import coupling_topk_overlap, topk_nn_overlap
-    from src.ot import compute_cost_matrix, sample_from_plan, sample_independent_pairs, sinkhorn_plan
+    from src.evaluation.metrics import coupling_topk_overlap, topk_nn_overlap
+    from src.core.ot import compute_cost_matrix, sample_from_plan, sample_independent_pairs, sinkhorn_plan
 
     X0 = np.asarray([[0.0], [2.0]], dtype=np.float32)
     X1 = np.asarray([[1.0], [3.0]], dtype=np.float32)

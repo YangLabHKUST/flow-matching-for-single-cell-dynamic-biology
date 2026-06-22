@@ -1,5 +1,5 @@
 section,claim_part,source_table,source_row_id,method_or_variant,target_or_boundary,metric,value,std,n_seeds,display_value,note
-5.1,hidden_t2_main_comparison,tab_5_1_main_suite_summary.csv,pairwise_local_bridges_6000|hidden_t2|mmd_rbf,pairwise_local_bridges_6000,hidden_t2,mmd_rbf,0.08363380310199475,0.0025156350247016765,3,0.0836,
+5.1,hidden_t2_main_comparison,tab_5_1_main_suite_summary.csv,pairwise_local_bridges_6000|hidden_t2|mmd_rbf,pairwise_local_bridges_6000,hidden_t2,mmd_rbf,0.0836338031019948,0.002515635024701712,3,0.0836,
 5.1,hidden_t2_main_comparison,tab_5_1_main_suite_summary.csv,pairwise_local_bridges_6000|hidden_t2|sliced_w2,pairwise_local_bridges_6000,hidden_t2,sliced_w2,0.4084517961011345,0.008338128077136412,3,0.408,
 5.1,hidden_t2_main_comparison,tab_5_1_main_suite_summary.csv,shared_adjacent_only_6000|hidden_t2|mmd_rbf,shared_adjacent_only_6000,hidden_t2,mmd_rbf,0.056501977445557884,0.006032679472582792,3,0.0565,
 5.1,hidden_t2_main_comparison,tab_5_1_main_suite_summary.csv,shared_adjacent_only_6000|hidden_t2|sliced_w2,shared_adjacent_only_6000,hidden_t2,sliced_w2,0.3559964411838988,0.023987170192130456,3,0.356,
@@ -24,6 +24,3 @@ section,claim_part,source_table,source_row_id,method_or_variant,target_or_bounda
 5.1,velocity_jump_diagnostic,tab_5_1_main_suite_diag_summary.csv,shared_skip_adj2_skip1_9000|t1|velocity_jump_mean_l2,shared_skip_adj2_skip1_9000,t1,velocity_jump_mean_l2,9.122618357340494,0.11790305118209564,3,9.12,
 5.1,velocity_jump_diagnostic,tab_5_1_main_suite_diag_summary.csv,shared_skip_adj2_skip1_9000|t3|velocity_jump_mean_l2,shared_skip_adj2_skip1_9000,t3,velocity_jump_mean_l2,4.451229413350423,0.21763757623796215,3,4.45,
 5.1,velocity_jump_diagnostic,tab_5_1_main_suite_diag_summary.csv,shared_skip_adj2_skip1_9000|t1_t3_mean|velocity_jump_mean_l2,shared_skip_adj2_skip1_9000,t1_t3_mean,velocity_jump_mean_l2_mean_over_hand_offs,6.786923885345459,,3,6.79,Mean of t1 and t3 hand-off jump means from tab_5_1_main_suite_diag_summary.csv.
-5.1,velocity_jump_diagnostic,tab_5_1_main_suite_diag_summary.csv,shared_skip_uniform_6000|t1|velocity_jump_mean_l2,shared_skip_uniform_6000,t1,velocity_jump_mean_l2,5.790808995564778,0.14523359913165496,3,5.79,
-5.1,velocity_jump_diagnostic,tab_5_1_main_suite_diag_summary.csv,shared_skip_uniform_6000|t3|velocity_jump_mean_l2,shared_skip_uniform_6000,t3,velocity_jump_mean_l2,2.264202038447062,0.1912930198142369,3,2.26,
-5.1,velocity_jump_diagnostic,tab_5_1_main_suite_diag_summary.csv,shared_skip_uniform_6000|t1_t3_mean|velocity_jump_mean_l2,shared_skip_uniform_6000,t1_t3_mean,velocity_jump_mean_l2_mean_over_hand_offs,4.02750551700592,,3,4.03,Mean of t1 and t3 hand-off jump means from tab_5_1_main_suite_diag_summary.csv.

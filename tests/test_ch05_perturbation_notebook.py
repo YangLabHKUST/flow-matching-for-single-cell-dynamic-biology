@@ -5,12 +5,32 @@ from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-NOTEBOOK_PATH = PROJECT_ROOT / "notebooks" / "05_2_perturbation_response_sciplex.ipynb"
+NOTEBOOK_PATH = PROJECT_ROOT / "notebooks" / "chapter5_2_perturbation_sciplex.ipynb"
+RETIRED_NOTEBOOK_PATH = PROJECT_ROOT / "notebooks" / "05_2_perturbation_response_sciplex.ipynb"
 
 
 def _notebook_text() -> str:
     payload = json.loads(NOTEBOOK_PATH.read_text())
     return "\n".join("".join(cell.get("source", [])) for cell in payload["cells"])
+
+
+def _notebook_output_text() -> str:
+    payload = json.loads(NOTEBOOK_PATH.read_text())
+    chunks: list[str] = []
+    for cell in payload["cells"]:
+        for output in cell.get("outputs", []):
+            text = output.get("text")
+            if isinstance(text, list):
+                chunks.append("".join(text))
+            elif isinstance(text, str):
+                chunks.append(text)
+            data = output.get("data", {})
+            plain = data.get("text/plain")
+            if isinstance(plain, list):
+                chunks.append("".join(plain))
+            elif isinstance(plain, str):
+                chunks.append(plain)
+    return "\n".join(chunks)
 
 
 def _setup_cell() -> str:
@@ -28,11 +48,15 @@ def _notebook_code_lengths() -> list[int]:
     return lengths
 
 
-def test_ch05_2_notebook_is_split_b_c_perturbation_only():
+def test_ch05_2_canonical_notebook_exists_and_retired_active_copy_is_removed():
     assert NOTEBOOK_PATH.exists()
+    assert not RETIRED_NOTEBOOK_PATH.exists()
+
+
+def test_ch05_2_notebook_is_split_b_c_perturbation_only():
     text = _notebook_text()
 
-    assert "Section 5.2 Perturbation response prediction with sci-Plex" in text
+    assert "Section 5.2 Perturbation prediction with sci-Plex" in text
     assert "Split B held-out highest dose" in text
     assert "Split C held-out compound" in text
     assert "pd.concat([split_b_metrics, split_c_metrics], ignore_index=True)" in text
@@ -68,9 +92,18 @@ def test_ch05_2_notebook_declares_only_perturbation_artifacts():
         assert removed not in text
 
 
+def test_ch05_2_notebook_has_no_reader_facing_machine_paths():
+    text = _notebook_text()
+    output_text = _notebook_output_text()
+
+    for forbidden in ["/home/xmabs/", "/import/"]:
+        assert forbidden not in text
+        assert forbidden not in output_text
+
+
 def test_ch05_2_defaults_to_full_section52_reproduction_config():
     setup = _setup_cell()
-    helper_source = (PROJECT_ROOT / "src" / "perturbation_reporting.py").read_text()
+    helper_source = (PROJECT_ROOT / "src" / "visualization" / "perturbation.py").read_text()
 
     assert "CONFIG = ch05s.make_section52_config(PROJECT_ROOT)" in setup
     assert "DEFAULT_SEED = CONFIG.default_seed" in setup
@@ -135,3 +168,18 @@ def test_ch05_2_notebook_uses_src_helpers_for_display_support():
 
     assert len(code_lengths) >= 18
     assert max(code_lengths) <= 90
+
+
+def test_ch05_2_notebook_explains_sciplex_cfm_training_wrapper():
+    text = _notebook_text()
+
+    for required in [
+        "evaluate_sciplex_split",
+        "_train_sciplex_cfm",
+        "CFM velocity-regression training loop",
+        "cfm_loss_from_pairs",
+        "zero_grad",
+        "backward",
+        "step",
+    ]:
+        assert required in text

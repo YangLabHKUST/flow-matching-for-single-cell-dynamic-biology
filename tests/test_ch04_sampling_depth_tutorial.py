@@ -9,11 +9,12 @@ import pytest
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-NOTEBOOK = PROJECT_ROOT / "notebooks" / "04_3_sampling_depth_and_claim_boundaries.ipynb"
+RETIRED_NOTEBOOK = PROJECT_ROOT / "notebooks" / "04_3_sampling_depth_and_claim_boundaries.ipynb"
+NOTEBOOK = PROJECT_ROOT / "notebooks" / "chapter4_3_sampling_depth.ipynb"
 
 
 def test_wfrfm_sampling_helpers_summarize_mass_convention_outputs(tmp_path: Path):
-    from src.sampling_depth_reporting import (
+    from src.visualization.sampling_depth import (
         make_wfrfm_agreement_summary,
         make_wfrfm_growth_delta_grid,
         resolve_wfrfm_output_suffix,
@@ -50,7 +51,7 @@ def test_wfrfm_sampling_helpers_summarize_mass_convention_outputs(tmp_path: Path
 
 
 def test_final_figure_package_manifest_validates_figures_and_sources(tmp_path: Path):
-    from src.sampling_depth_reporting import FINAL_FIGURE_CLAIMS, write_final_figure_package
+    from src.visualization.sampling_depth import FINAL_FIGURE_CLAIMS, write_final_figure_package
 
     final_fig_dir = tmp_path / "figures" / "new3"
     final_fig_dir.mkdir(parents=True)
@@ -76,7 +77,7 @@ def test_final_figure_package_manifest_validates_figures_and_sources(tmp_path: P
 
 
 def test_bridge_sampling_diagnostic_preserves_sampling_depth_contract():
-    from src.sampling_depth_reporting import bridge_sampling_diagnostic
+    from src.visualization.sampling_depth import bridge_sampling_diagnostic
 
     pcs_all = np.asarray(
         [
@@ -166,15 +167,88 @@ def test_bridge_sampling_diagnostic_preserves_sampling_depth_contract():
         )
 
 
+def test_sampling_depth_canonical_notebook_exists_and_retired_active_copy_is_removed():
+    assert NOTEBOOK.exists()
+    assert not RETIRED_NOTEBOOK.exists()
+
+
 def test_sampling_depth_notebook_uses_src_helpers_instead_of_long_local_blocks():
     payload = json.loads(NOTEBOOK.read_text(encoding="utf-8"))
     code_sources = ["".join(cell.get("source", [])) for cell in payload["cells"] if cell.get("cell_type") == "code"]
     code_text = "\n".join(code_sources)
 
-    assert "from src.sampling_depth_reporting import" in code_text
+    assert "from src.visualization.sampling_depth import" in code_text
     assert "def save_pub_figure(" not in code_text
     assert "def load_eb_data(" not in code_text
     assert "def bridge_sampling_diagnostic(" not in code_text
     assert "def resolve_wfrfm_output_suffix(" not in code_text
     assert "FINAL_FIGURE_CLAIMS = {" not in code_text
     assert max(source.count("\n") + bool(source) for source in code_sources) <= 100
+
+
+def test_sampling_depth_notebook_reader_flow_has_no_noise_cells_or_absolute_path_outputs():
+    payload = json.loads(NOTEBOOK.read_text(encoding="utf-8"))
+    assert len(payload["cells"]) <= 39
+
+    for index, cell in enumerate(payload["cells"]):
+        source = "".join(cell.get("source", []))
+        if cell.get("cell_type") == "code":
+            assert source.strip(), (NOTEBOOK.name, index)
+            assert not all(
+                line.strip().startswith("#") or not line.strip()
+                for line in source.splitlines()
+            ), (NOTEBOOK.name, index)
+
+        for output in cell.get("outputs", []):
+            chunks = []
+            chunks.extend(output.get("text", []))
+            data = output.get("data") or {}
+            for key in ["text/plain", "text/html"]:
+                value = data.get(key, "")
+                chunks.extend(value if isinstance(value, list) else [str(value)])
+            output_text = "".join(chunks)
+            assert "/home/xmabs" not in output_text, (NOTEBOOK.name, index)
+            assert "/import/" not in output_text, (NOTEBOOK.name, index)
+
+
+def test_sampling_depth_notebook_uses_shared_save_and_show_and_compact_setup():
+    payload = json.loads(NOTEBOOK.read_text(encoding="utf-8"))
+    cells = payload["cells"]
+    code_sources = [
+        "".join(cell.get("source", []))
+        for cell in cells
+        if cell.get("cell_type") == "code"
+    ]
+    code_text = "\n".join(code_sources)
+    markdown_sources = [
+        "".join(cell.get("source", []))
+        for cell in cells
+        if cell.get("cell_type") == "markdown"
+    ]
+
+    assert "save_and_show = make_save_and_show(" in code_text
+    assert "config = make_ch04_run_config()" in code_text
+    assert "display_saved_figure = lambda filename, width=900:" in code_text
+
+    assert "## 0. Setup" in markdown_sources[1]
+    assert "The setup is split into" not in "\n".join(markdown_sources)
+    assert "## 1. Shared Utilities" in "\n".join(markdown_sources)
+
+    setup_heading_index = next(
+        i
+        for i, cell in enumerate(cells)
+        if cell.get("cell_type") == "markdown"
+        and "## 0. Setup" in "".join(cell.get("source", []))
+    )
+    shared_heading_index = next(
+        i
+        for i, cell in enumerate(cells[setup_heading_index + 1 :], setup_heading_index + 1)
+        if cell.get("cell_type") == "markdown"
+        and "".join(cell.get("source", [])).startswith("## 1. Shared Utilities")
+    )
+    setup_code_cells = [
+        cell
+        for cell in cells[setup_heading_index + 1 : shared_heading_index]
+        if cell.get("cell_type") == "code"
+    ]
+    assert len(setup_code_cells) <= 3

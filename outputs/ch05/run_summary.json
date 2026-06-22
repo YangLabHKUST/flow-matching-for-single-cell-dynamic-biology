@@ -268,27 +268,10 @@
     "tables/ch05/tab_5_1_main_suite_diag.csv",
     "tables/ch05/tab_5_1_main_suite_diag_summary.csv",
     "tables/ch05/tab_5_1_main_text_results.csv",
-    "figures/ch05/fig_5_1_main_suite.png",
-    "figures/ch05/fig_5_1_A_time_pair_designs.png",
-    "figures/ch05/fig_5_1_A_time_pair_designs.pdf",
-    "figures/ch05/fig_5_1_B_hidden_t2_recovery.png",
-    "figures/ch05/fig_5_1_B_hidden_t2_recovery.pdf",
-    "figures/ch05/fig_5_1_C_seen_t4_rollout.png",
-    "figures/ch05/fig_5_1_C_seen_t4_rollout.pdf",
-    "figures/ch05/fig_5_1_D_velocity_jump.png",
-    "figures/ch05/fig_5_1_D_velocity_jump.pdf",
-    "figures/ch05/fig_5_1_main_suite_preview.png",
-    "figures/ch05/fig_5_1_main_suite_preview.pdf",
     "figures/ch05/fig5_1_time_pair_designs.png",
-    "figures/ch05/fig5_1_time_pair_designs.pdf",
     "figures/ch05/fig5_1_hidden_t2_recovery.png",
-    "figures/ch05/fig5_1_hidden_t2_recovery.pdf",
     "figures/ch05/fig5_1_seen_t4_rollout.png",
-    "figures/ch05/fig5_1_seen_t4_rollout.pdf",
-    "figures/ch05/fig5_1_velocity_jump.png",
-    "figures/ch05/fig5_1_velocity_jump.pdf",
-    "figures/ch05/fig5_1_combined.png",
-    "figures/ch05/fig5_1_combined.pdf"
+    "figures/ch05/fig5_1_velocity_jump.png"
   ],
   "finite_metric_checks": {
     "eb_diag": true,
@@ -1197,7 +1180,6 @@
     "does_skip_2to1_beat_adjacent_only_on_seen_t4": true,
     "does_skip_2to1_beat_pairwise_on_hidden_t2": true,
     "does_skip_2to1_degrade_hidden_t2_vs_adjacent_only": true,
-    "figure": "figures/ch05/fig_5_1_main_suite.png",
     "figure_5_1_redrawn_error_bars": "Quantitative panels use mean +/- SEM across seed-level rows from tab_5_1_main_suite.csv and tab_5_1_main_suite_diag.csv.",
     "figure_5_1_redrawn_missing_entries": [],
     "figure_5_1_redrawn_panel_sources": [
@@ -1223,15 +1205,9 @@
       }
     ],
     "figure_5_1_redrawn_panels": {
-      "fig5_1_combined_pdf": "figures/ch05/fig5_1_combined.pdf",
-      "fig5_1_combined_png": "figures/ch05/fig5_1_combined.png",
-      "fig5_1_hidden_t2_recovery_pdf": "figures/ch05/fig5_1_hidden_t2_recovery.pdf",
       "fig5_1_hidden_t2_recovery_png": "figures/ch05/fig5_1_hidden_t2_recovery.png",
-      "fig5_1_seen_t4_rollout_pdf": "figures/ch05/fig5_1_seen_t4_rollout.pdf",
       "fig5_1_seen_t4_rollout_png": "figures/ch05/fig5_1_seen_t4_rollout.png",
-      "fig5_1_time_pair_designs_pdf": "figures/ch05/fig5_1_time_pair_designs.pdf",
       "fig5_1_time_pair_designs_png": "figures/ch05/fig5_1_time_pair_designs.png",
-      "fig5_1_velocity_jump_pdf": "figures/ch05/fig5_1_velocity_jump.pdf",
       "fig5_1_velocity_jump_png": "figures/ch05/fig5_1_velocity_jump.png"
     },
     "hidden_t2_main_comparison": [
@@ -1245,9 +1221,9 @@
         "section": "5.1",
         "source_row_id": "pairwise_local_bridges_6000|hidden_t2|mmd_rbf",
         "source_table": "tab_5_1_main_suite_summary.csv",
-        "std": 0.0025156350247016765,
+        "std": 0.002515635024701712,
         "target_or_boundary": "hidden_t2",
-        "value": 0.08363380310199475
+        "value": 0.0836338031019948
       },
       {
         "claim_part": "hidden_t2_main_comparison",
@@ -1477,10 +1453,7 @@
       "shared_adjacent_only_t3": 4.81,
       "shared_skip_2to1_mean_t1_t3": 6.79,
       "shared_skip_2to1_t1": 9.12,
-      "shared_skip_2to1_t3": 4.45,
-      "shared_skip_uniform_mean_t1_t3": 4.03,
-      "shared_skip_uniform_t1": 5.79,
-      "shared_skip_uniform_t3": 2.26
+      "shared_skip_2to1_t3": 4.45
     },
     "velocity_jump_diagnostic_rows": [
       {
@@ -1608,48 +1581,6 @@
         "std": NaN,
         "target_or_boundary": "t1_t3_mean",
         "value": 6.786923885345459
-      },
-      {
-        "claim_part": "velocity_jump_diagnostic",
-        "display_value": "5.79",
-        "method_or_variant": "shared_skip_uniform_6000",
-        "metric": "velocity_jump_mean_l2",
-        "n_seeds": 3,
-        "note": "",
-        "section": "5.1",
-        "source_row_id": "shared_skip_uniform_6000|t1|velocity_jump_mean_l2",
-        "source_table": "tab_5_1_main_suite_diag_summary.csv",
-        "std": 0.14523359913165496,
-        "target_or_boundary": "t1",
-        "value": 5.790808995564778
-      },
-      {
-        "claim_part": "velocity_jump_diagnostic",
-        "display_value": "2.26",
-        "method_or_variant": "shared_skip_uniform_6000",
-        "metric": "velocity_jump_mean_l2",
-        "n_seeds": 3,
-        "note": "",
-        "section": "5.1",
-        "source_row_id": "shared_skip_uniform_6000|t3|velocity_jump_mean_l2",
-        "source_table": "tab_5_1_main_suite_diag_summary.csv",
-        "std": 0.1912930198142369,
-        "target_or_boundary": "t3",
-        "value": 2.264202038447062
-      },
-      {
-        "claim_part": "velocity_jump_diagnostic",
-        "display_value": "4.03",
-        "method_or_variant": "shared_skip_uniform_6000",
-        "metric": "velocity_jump_mean_l2_mean_over_hand_offs",
-        "n_seeds": 3,
-        "note": "Mean of t1 and t3 hand-off jump means from tab_5_1_main_suite_diag_summary.csv.",
-        "section": "5.1",
-        "source_row_id": "shared_skip_uniform_6000|t1_t3_mean|velocity_jump_mean_l2",
-        "source_table": "tab_5_1_main_suite_diag_summary.csv",
-        "std": NaN,
-        "target_or_boundary": "t1_t3_mean",
-        "value": 4.02750551700592
       }
     ]
   },

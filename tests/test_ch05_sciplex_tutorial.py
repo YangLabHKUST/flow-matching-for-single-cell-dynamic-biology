@@ -17,7 +17,7 @@ METHOD_LABELS = {
 
 
 def test_metric_table_for_split_orders_methods_and_reports_missing_labels():
-    from src.perturbation_reporting import metric_table_for_split, metric_value_table
+    from src.visualization.perturbation import metric_table_for_split, metric_value_table
 
     summary = pd.DataFrame(
         [
@@ -40,7 +40,7 @@ def test_metric_table_for_split_orders_methods_and_reports_missing_labels():
 
 
 def test_make_metric_display_table_from_summary_validates_expected_values(tmp_path):
-    from src.perturbation_reporting import make_metric_display_table_from_summary
+    from src.visualization.perturbation import make_metric_display_table_from_summary
 
     source = tmp_path / "summary.json"
     rows = [
@@ -79,7 +79,7 @@ def test_make_metric_display_table_from_summary_validates_expected_values(tmp_pa
 
 
 def test_build_section52_metric_display_tables_centralizes_manuscript_values(tmp_path):
-    from src.perturbation_reporting import build_section52_metric_display_tables, metric_value_table
+    from src.visualization.perturbation import build_section52_metric_display_tables, metric_value_table
 
     raw_summary = [
         {"split_name": "Split B held-out highest dose", "method": "M1_unconditional", "program_readout_mmd": 0.50, "program_readout_sliced_w2": 1.50},
@@ -120,7 +120,7 @@ def test_build_section52_metric_display_tables_centralizes_manuscript_values(tmp
 
 
 def test_wrapped_labels_are_stable():
-    from src.perturbation_reporting import short_compound_label, wrapped_method_label
+    from src.visualization.perturbation import short_compound_label, wrapped_method_label
 
     assert wrapped_method_label("model_a", METHOD_LABELS, width=20) == "Model A"
     assert "\n" in wrapped_method_label("very_long_method_name_without_label", METHOD_LABELS, width=10)
@@ -128,7 +128,7 @@ def test_wrapped_labels_are_stable():
 
 
 def test_section52_helpers_expose_display_constants_and_config(tmp_path, monkeypatch):
-    from src import perturbation_reporting as tutorial
+    from src.visualization import perturbation as tutorial
 
     monkeypatch.setenv("CH05_SEED", "7")
     monkeypatch.setenv("CH05_QUICK", "1")
@@ -136,8 +136,8 @@ def test_section52_helpers_expose_display_constants_and_config(tmp_path, monkeyp
     monkeypatch.setenv("CH05_BATCH_SIZE", "64")
     monkeypatch.setenv("CH05_NFE", "8")
     monkeypatch.setenv("CH05_MAX_EVAL_GROUPS", "3")
-    (tmp_path / "src").mkdir()
-    (tmp_path / "src" / "single_cell_experiments.py").write_text("# marker\n", encoding="utf-8")
+    (tmp_path / "src" / "experiments").mkdir(parents=True)
+    (tmp_path / "src" / "experiments" / "perturbation.py").write_text("# marker\n", encoding="utf-8")
 
     config = tutorial.make_section52_config(project_root=tmp_path, device="cpu")
 
@@ -156,7 +156,7 @@ def test_section52_helpers_expose_display_constants_and_config(tmp_path, monkeyp
 
 
 def test_section52_save_figure_pair_writes_png_and_pdf(tmp_path):
-    from src.perturbation_reporting import save_figure_pair
+    from src.visualization.perturbation import save_figure_pair
 
     fig, ax = plt.subplots()
     ax.plot([0, 1], [0, 1])
@@ -169,8 +169,38 @@ def test_section52_save_figure_pair_writes_png_and_pdf(tmp_path):
     assert paths["pdf"].exists()
 
 
+def test_section52_m2_design_labels_do_not_overlap_velocity_box():
+    from matplotlib.patches import FancyBboxPatch
+
+    from src.visualization.perturbation import draw_method_tile
+
+    fig, ax = plt.subplots(figsize=(4.1, 2.325))
+    draw_method_tile(
+        ax,
+        "M2_per_compound",
+        r"$v_\theta^{(c)}(x,\tau)$",
+        "compound-specific field; no cross-compound sharing",
+        seed=42,
+        seed_offset=101,
+    )
+    fig.canvas.draw()
+    renderer = fig.canvas.get_renderer()
+
+    velocity_box = [
+        patch
+        for patch in ax.patches
+        if isinstance(patch, FancyBboxPatch) and abs(patch.get_x() - 0.365) < 1e-6 and abs(patch.get_y() - 0.420) < 1e-6
+    ][0]
+    velocity_box_bbox = velocity_box.get_window_extent(renderer)
+    compound_labels = [text for text in ax.texts if text.get_text() in {"c1", "c2", "c3"}]
+
+    assert len(compound_labels) == 3
+    assert all(not label.get_window_extent(renderer).overlaps(velocity_box_bbox) for label in compound_labels)
+    plt.close(fig)
+
+
 def test_section52_split_status_matrix_marks_train_test_and_missing():
-    from src.perturbation_reporting import split_status_matrix
+    from src.visualization.perturbation import split_status_matrix
 
     split_meta = pd.DataFrame(
         [
@@ -190,7 +220,7 @@ def test_section52_split_status_matrix_marks_train_test_and_missing():
 
 
 def test_section52_manifest_builder_checks_finite_metrics_and_artifact_paths(tmp_path):
-    from src.perturbation_reporting import Section52Config, build_section52_run_summary
+    from src.visualization.perturbation import Section52Config, build_section52_run_summary
 
     for directory in ["figures/ch05/new2", "tables/ch05", "outputs/ch05"]:
         (tmp_path / directory).mkdir(parents=True)

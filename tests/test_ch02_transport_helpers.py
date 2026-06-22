@@ -7,11 +7,11 @@ import numpy as np
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-NOTEBOOK_PATH = PROJECT_ROOT / "notebooks" / "02_distribution_transport_before_fm.ipynb"
+NOTEBOOK_PATH = PROJECT_ROOT / "notebooks" / "chapter2_distribution_transport.ipynb"
 
 
 def test_median_positive_scale_ignores_zeros_and_falls_back_to_one():
-    from src.ot import median_positive_scale
+    from src.core.ot import median_positive_scale
 
     C = np.asarray([[0.0, 2.0, 8.0], [0.0, 4.0, 0.0]], dtype=np.float32)
     assert median_positive_scale(C) == 4.0
@@ -19,7 +19,7 @@ def test_median_positive_scale_ignores_zeros_and_falls_back_to_one():
 
 
 def test_transport_reporting_helpers_cover_reusable_transport_math():
-    from src.transport_reporting import (
+    from src.visualization.transport import (
         action_per_pair_pc,
         brownian_bridge_trajectories,
         coupling_diagnostic_row,
@@ -70,7 +70,7 @@ def test_ch02_notebook_imports_reusable_helpers_from_src():
         if cell.get("cell_type") == "code"
     )
 
-    assert "from src.transport_reporting import (" in code_text
+    assert "from src.visualization.transport import (" in code_text
     for local_definition in [
         "def sorted_time_labels",
         "def subsample_indices",

@@ -50,7 +50,7 @@ def _diagnostics_frame() -> pd.DataFrame:
 
 
 def test_fig5_1_panel_tables_preserve_real_sources_and_sem():
-    from src.timecourse_figures import build_fig5_1_panel_tables
+    from src.visualization.timecourse import build_fig5_1_panel_tables
 
     tables = build_fig5_1_panel_tables(_metrics_frame(), _diagnostics_frame())
 
@@ -91,7 +91,7 @@ def test_fig5_1_panel_tables_preserve_real_sources_and_sem():
 
 
 def test_fig5_1_panel_drawing_and_registration_are_reusable(tmp_path):
-    from src.timecourse_figures import (
+    from src.visualization.timecourse import (
         build_fig5_1_panel_tables,
         draw_fig5_1_panels,
         draw_fig5_1_hidden_t2_panel,
@@ -108,17 +108,17 @@ def test_fig5_1_panel_drawing_and_registration_are_reusable(tmp_path):
         display_fn=lambda path, width=None: displayed.append((Path(path).name, width)),
     )
 
-    assert len(paths) == 10
+    assert len(paths) == 4
     assert all(path.exists() and path.stat().st_size > 0 for path in paths.values())
-    assert len(displayed) == 5
-    assert "fig5_1_combined_png" in paths
+    assert len(displayed) == 4
+    assert "fig5_1_combined_png" not in paths
 
     hidden_only = draw_fig5_1_hidden_t2_panel(
         tables.hidden_t2_values,
         fig_dir=tmp_path / "single_panel",
         display_fn=None,
     )
-    assert sorted(hidden_only) == ["fig5_1_hidden_t2_recovery_pdf", "fig5_1_hidden_t2_recovery_png"]
+    assert sorted(hidden_only) == ["fig5_1_hidden_t2_recovery_png"]
 
     run_summary_path = tmp_path / "outputs" / "ch05" / "run_summary.json"
     path_table = register_fig5_1_artifacts(
@@ -129,8 +129,15 @@ def test_fig5_1_panel_drawing_and_registration_are_reusable(tmp_path):
         project_root=tmp_path,
     )
 
-    assert path_table.shape == (10, 3)
+    assert path_table.shape == (4, 3)
     summary = json.loads(run_summary_path.read_text())
     section = summary["section_5_1_main_suite"]
     assert section["figure_5_1_redrawn_missing_entries"] == []
-    assert "figures/ch05/fig5_1_combined.png" in summary["expected_artifacts"]
+    assert "figures/ch05/fig5_1_combined.png" not in summary["expected_artifacts"]
+    assert "figures/ch05/fig_5_1_main_suite.png" not in summary["expected_artifacts"]
+    assert {
+        "figures/ch05/fig5_1_time_pair_designs.png",
+        "figures/ch05/fig5_1_hidden_t2_recovery.png",
+        "figures/ch05/fig5_1_seen_t4_rollout.png",
+        "figures/ch05/fig5_1_velocity_jump.png",
+    }.issubset(set(summary["expected_artifacts"]))

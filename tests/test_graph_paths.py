@@ -5,7 +5,7 @@ import pytest
 
 
 def test_polyline_helpers_resample_by_arclength_and_handle_degenerate_paths():
-    from src.graph_paths import point_on_polyline, polyline_length, resample_polyline
+    from src.evaluation.graph_paths import point_on_polyline, polyline_length, resample_polyline
 
     path = np.asarray([[0.0, 0.0], [2.0, 0.0], [2.0, 2.0]], dtype=np.float32)
     assert polyline_length(path) == pytest.approx(4.0)
@@ -22,7 +22,7 @@ def test_polyline_helpers_resample_by_arclength_and_handle_degenerate_paths():
 
 
 def test_extract_path_indices_reports_fallbacks():
-    from src.graph_paths import extract_path_indices
+    from src.evaluation.graph_paths import extract_path_indices
 
     pred_row = np.asarray([-9999, 0, 1, 2], dtype=int)
     assert extract_path_indices(pred_row, 0, 3, dist_value=1.0, n_nodes=4) == ([0, 1, 2, 3], False)
@@ -34,7 +34,7 @@ def test_knn_density_scorer_and_graph_builders():
     pytest.importorskip("sklearn")
     pytest.importorskip("scipy")
 
-    from src.graph_paths import build_connected_knn_graph, build_endpoint_knn_graph_grid, knn_density_scorer
+    from src.evaluation.graph_paths import build_connected_knn_graph, build_endpoint_knn_graph_grid, knn_density_scorer
 
     points = np.asarray([[0.0], [1.0], [2.0], [3.0], [4.0]], dtype=np.float32)
     score_fn, ref_radius = knn_density_scorer(points, k=2)
