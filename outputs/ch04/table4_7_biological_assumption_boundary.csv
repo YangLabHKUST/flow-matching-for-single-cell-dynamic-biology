@@ -1,5 +1,0 @@
-assumption,status,claim_boundary
-state labels,coarse k-means bins used,"diagnostic bins, not validated cell types"
-cell counts,observed destructive snapshot counts,"sampling depth, not absolute biological abundance"
-subsampling,equal-depth bootstrap repeats=50,stability diagnostic only
-adjacent bridge OT,original-depth and equal-depth OT sampled endpoint diagnostics in PC-20,diagnostic only; not trained CFM and not observed paired histories

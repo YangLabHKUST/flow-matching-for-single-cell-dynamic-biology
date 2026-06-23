@@ -1,4 +1,0 @@
-path_family,mean_endpoint_distance,mean_path_length,energy_proxy,midpoint_deviation,midpoint_spread,n_pairs,n_steps,notes
-straight bridge,2.4849228842249937,2.4849228842249937,6.185509539007157,0.0,0.0,80,51,Native 2D straight interpolation for the sampled endpoint pairs.
-curved deterministic bridge,2.4849228842249937,2.714417845131984,7.406078552004947,0.49698457684499875,0.020657007006917163,80,51,Native 2D deterministic bridge with fixed endpoint coupling.
-Brownian stochastic bridge,2.4849228842249937,3.0764323379127694,11.31608038445848,0.15157295729636408,0.4703445496373897,80,51,Discrete sampled-path proxy; not a strong action conclusion.

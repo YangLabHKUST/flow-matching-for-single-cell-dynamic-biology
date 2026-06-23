@@ -1,8 +1,0 @@
-{
-  "BATCH_SIZE": 256,
-  "DEFAULT_NFE": 64,
-  "DEVICE": "cuda",
-  "SMOKE_MODE": false,
-  "TRAINING_STEPS": 1500,
-  "final_figure_dir": "figures/ch04/new3"
-}

@@ -123,6 +123,20 @@ def test_utils_resolve_project_root_accepts_reorganized_src(monkeypatch, tmp_pat
     assert resolve_project_root() == project.resolve()
 
 
+def test_public_notebook_data_files_are_present():
+    project_root = Path(__file__).resolve().parents[1]
+
+    required_data = [
+        project_root / "data" / "trajectorynet_eb" / "eb_velocity_v5.npz",
+        project_root / "data" / "toy_branching_snapshots" / "branching_toy_pseudocounts.h5ad",
+        project_root / "data" / "sciplex3_a549" / "sciplex3_a549_hvg_top1000.h5ad",
+    ]
+
+    for path in required_data:
+        assert path.exists(), path
+        assert path.stat().st_size > 0, path
+
+
 def test_flow_runtime_euler_helpers_preserve_zero_velocity():
     torch = pytest.importorskip("torch")
 

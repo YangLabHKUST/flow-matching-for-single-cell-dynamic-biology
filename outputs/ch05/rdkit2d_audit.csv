@@ -1,2 +1,0 @@
-D_RDKit,descriptor_backend,external_smiles_failure_count,n_external_smiles,n_query_smiles,nan_inf_count,smiles_failure_count,std_eps,std_too_small_count
-200,descriptastorus,0,20329,8,75,0,1e-08,4

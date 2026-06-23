@@ -9,13 +9,6 @@ import pytest
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-ARCHIVED_MONOLITH_PATH = (
-    PROJECT_ROOT
-    / "archive"
-    / "notebooks_retired_20260604_ch03_split"
-    / "03_flow_matching_from_scratch.ipynb"
-)
-RETIRED_INDEX_PATH = PROJECT_ROOT / "archive" / "03_flow_matching_from_scratch.ipynb"
 CH03_TOY_NOTEBOOK = "chapter3_1_flow_matching_from_scratch.ipynb"
 CH03_EB_MAIN_RETIRED_NOTEBOOK = "03_2_eb20d_main_flow_matching.ipynb"
 CH03_EB_MAIN_NOTEBOOK = "chapter3_2_eb_flow_matching.ipynb"
@@ -138,10 +131,6 @@ def _payload(filename: str) -> dict:
     return json.loads((PROJECT_ROOT / "notebooks" / filename).read_text())
 
 
-def _payload_from_path(path: Path) -> dict:
-    return json.loads(path.read_text())
-
-
 def _sources(filename: str, cell_type: str | None = None) -> list[str]:
     payload = _payload(filename)
     return [
@@ -229,26 +218,6 @@ def test_ch03_split_notebooks_cover_artifacts_without_overlap():
 
     expected_all = {artifact for spec in SPLIT_SPECS.values() for artifact in spec["required_artifacts"]}
     assert set(artifact_owners) == expected_all
-
-
-def test_ch03_split_notebooks_cover_legacy_monolith_artifact_contract():
-    archived_payload = _payload_from_path(ARCHIVED_MONOLITH_PATH)
-    archived_text = "\n".join("".join(cell.get("source", [])) for cell in archived_payload["cells"])
-    split_text = "\n".join(
-        "\n".join(_sources(filename))
-        for filename in SPLIT_SPECS
-    )
-
-    expected_legacy_artifacts = {
-        artifact
-        for spec in SPLIT_SPECS.values()
-        for artifact in spec["required_artifacts"]
-    }
-    expected_legacy_artifacts.update(LEGACY_CH03_STATIC_FIGURES)
-
-    for artifact in expected_legacy_artifacts:
-        assert _artifact_referenced(archived_text, artifact) or _artifact_referenced(split_text, artifact), artifact
-        assert _artifact_referenced(split_text, artifact), artifact
 
 
 def test_ch03_required_outputs_remain_referenced_after_manifest_removal():
@@ -873,33 +842,3 @@ def test_ch03_eb20d_ablation_notebook_keeps_reader_facing_outputs_clean():
 
     assert "save_and_show(" in code_text
     assert "save_and_show = make_save_and_show(" in code_text
-
-
-def test_old_ch03_monolith_is_retired_index_only():
-    active_payload = _payload_from_path(RETIRED_INDEX_PATH)
-    active_text = "\n".join("".join(cell.get("source", [])) for cell in active_payload["cells"])
-    active_code_sources = [
-        "".join(cell.get("source", []))
-        for cell in active_payload["cells"]
-        if cell.get("cell_type") == "code"
-    ]
-
-    assert "retired" in active_text.lower()
-    for filename in SPLIT_SPECS:
-        assert filename in active_text
-    assert len(active_code_sources) <= 1
-    assert "Train EB 20D VelocityMLP" not in active_text
-    assert "CNF-Endpoint Baseline" not in active_text
-    assert "save_figure(" not in active_text
-    assert "train_velocity_model" not in active_text
-
-    archived_payload = _payload_from_path(ARCHIVED_MONOLITH_PATH)
-    archived_text = "\n".join("".join(cell.get("source", [])) for cell in archived_payload["cells"])
-    archived_code_sources = [
-        "".join(cell.get("source", []))
-        for cell in archived_payload["cells"]
-        if cell.get("cell_type") == "code"
-    ]
-    assert len(archived_code_sources) >= 10
-    assert "Train EB 20D VelocityMLP" in archived_text
-    assert "CNF-Endpoint Baseline" in archived_text

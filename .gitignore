@@ -18,6 +18,13 @@ data/**/*.zip
 data/**/raw/
 
 # Generated caches, checkpoints, and executed notebook copies.
+archive/
+figures/
+tables/
+outputs/
+!figures/.gitkeep
+!tables/.gitkeep
+!outputs/.gitkeep
 outputs/**/cache/
 outputs/**/quarantine*/
 outputs/**/*.npz

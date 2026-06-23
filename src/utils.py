@@ -51,6 +51,9 @@ def resolve_project_root(start: str | Path | None = None, *, markers=("src", "no
         *start_path.parents,
         Path.cwd().resolve(),
         Path.cwd().resolve().parent,
+        Path("/home/xmabs/flow_matching_for_single_cell_dynamic_biology/flow_matching_for_single_cell_dynamic_biology"),
+        Path("/import/home4/xmabs/flow_matching_for_single_cell_dynamic_biology/flow_matching_for_single_cell_dynamic_biology"),
+        Path("/import/macyang_home4/xmabs/flow_matching_for_dynamic_biology/flow_matching_for_single_cell_dynamic_biology"),
         Path("/home/xmabs/flow_matching_for_dynamic_biology/flow_matching_for_dynamic_biology"),
         Path("/import/home4/xmabs/flow_matching_for_dynamic_biology/flow_matching_for_dynamic_biology"),
     ]

@@ -42,7 +42,7 @@ def _find_project_root() -> Path:
     cwd = Path.cwd().resolve()
     for candidate in [
         cwd,
-        cwd / "flow_matching_for_dynamic_biology",
+        cwd / "flow_matching_for_single_cell_dynamic_biology",
         cwd.parent,
         script_root,
     ]:

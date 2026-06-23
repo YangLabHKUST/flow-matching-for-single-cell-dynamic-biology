@@ -1,8 +1,0 @@
-item,status
-raw EB counts treated as sampling-depth proxies,pass
-equal-depth described as a mass convention,pass
-state bins described as coarse PC-20 diagnostics,pass
-raw-count proxies not used as calibrated abundance,pass
-WFR-FM growth described as a convention-dependent readout,pass
-stochastic bridge demo described as synthetic normalized,pass
-stochastic bridge width kept separate from EB growth and mass convention,pass

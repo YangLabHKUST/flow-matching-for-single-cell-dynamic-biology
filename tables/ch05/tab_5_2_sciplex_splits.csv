@@ -1,5 +1,0 @@
-split_name,split,n_cells,n_vehicle,n_treated,K_compounds,n_doses
-Split B held-out highest dose,test,1892,0,1892,8,1
-Split B held-out highest dose,train,5964,250,5714,8,3
-Split C held-out compound,test,1000,0,1000,1,4
-Split C held-out compound,train,6856,250,6606,7,4

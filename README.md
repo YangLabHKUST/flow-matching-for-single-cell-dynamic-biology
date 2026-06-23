@@ -1,34 +1,43 @@
-# Flow Matching for Dynamic Biology
+# Flow Matching for Single-Cell Dynamic Biology
 
 Teaching code for a paper-facing tutorial on flow matching for time-resolved single-cell snapshots.
 
-This tree now uses the v2 paper workflow at the repository root. The migrated
-notebooks and generated artifacts have replaced the older notebook/result set.
+The public repository is organized around runnable notebooks. Generated figures,
+tables, output summaries, executed notebook copies, and historical archive files
+are intentionally not tracked; rerun the notebooks to regenerate them locally.
 
 ## Layout
 
     notebooks/   v2 paper-facing notebooks
     scripts/     v2 runners and notebook builders
     src/         shared modules imported by notebooks and scripts
-    figures/     generated paper figures
-    outputs/     generated run summaries, executed notebooks, and caches
-    tables/      generated paper tables
+    figures/     generated paper figures, ignored by Git
+    outputs/     generated run summaries, executed notebooks, and caches, ignored by Git
+    tables/      generated paper tables, ignored by Git
     configs/     YAML configs retained for reusable examples
     data/        reusable datasets, organized by dataset rather than chapter
-    tests/       lightweight migration and artifact sanity tests
+    tests/       lightweight notebook and helper sanity tests
 
 ## Data
 
 Reusable data stays under `data/`. The current v2 workflow uses the EB
 time-course assets, sci-Plex A549 assets, LINCS compound metadata, and selected
-toy assets through the shared `src/` loaders.
+toy assets through the shared `src/` loaders. The public repository tracks the
+small data files needed by the notebooks:
+
+- `data/trajectorynet_eb/eb_velocity_v5.npz`
+- `data/toy_branching_snapshots/branching_toy_pseudocounts.h5ad`
+- `data/sciplex3_a549/sciplex3_a549_hvg_top1000.h5ad`
+- supporting CSV and metadata files under `data/`
+
+Large raw downloads and local caches remain ignored.
 
 ## Design Rules
 
 - Keep training loops explicit and readable.
 - Avoid production abstractions, experiment managers, and deep inheritance.
-- Keep paper claims tied to generated artifacts in `figures/`, `tables/`, and
-  `outputs/`.
+- Keep generated artifacts in `figures/`, `tables/`, and `outputs/`; these
+  directories are reproducible outputs rather than source files.
 
 ## Environment
 
@@ -55,7 +64,7 @@ python -c "import torch; print(torch.__version__, torch.cuda.is_available(), tor
 python -m pytest -q
 ```
 
-## How to reproduce paper figures
+## How to reproduce notebook figures
 
 Steps in order:
 1. `conda env create -f environment.yml` (creates the GPU-enabled `fmdb` env)
@@ -79,4 +88,5 @@ Steps in order:
 Notes:
 - `QUICK_MODE=1` (default) is the fast smoke run; full mode (`QUICK_MODE=0`) produces paper-grade figures.
 - `SMOKE_MODE=1` is even smaller and intended for CI only.
+- The checked-in notebooks have cleared outputs; open and run them to see the figures.
 - Each notebook is independently runnable as long as its upstream chapter artifacts/caches exist (see notebooks/INDEX.md).
