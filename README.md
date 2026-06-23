@@ -8,7 +8,6 @@ and output summaries are not tracked by Git; rerun the notebooks to regenerate t
 ## Layout
 
     notebooks/   tutorial notebooks, ordered by chapter
-    scripts/     runners and notebook builders
     src/         shared modules imported by notebooks and scripts
     configs/     YAML configs for reusable examples
     data/        small reusable datasets, organized by dataset
