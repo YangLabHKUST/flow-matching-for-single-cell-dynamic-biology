@@ -3,7 +3,3 @@ name = "flow-matching-for-single-cell-dynamic-biology"
 version = "0.1.0"
 description = "Toy-first teaching code for flow matching on dynamic single-cell snapshots."
 requires-python = ">=3.10"
-
-[tool.pytest.ini_options]
-pythonpath = ["."]
-testpaths = ["tests"]

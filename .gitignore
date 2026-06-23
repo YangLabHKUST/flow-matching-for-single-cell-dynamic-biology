@@ -16,6 +16,16 @@ data/**/*.h5ad
 data/**/*.npz
 data/**/*.zip
 data/**/raw/
+data/**/*dataset_card.md
+data/chemcpa_lincs_smiles/GSE92742_Broad_LINCS_pert_info.txt
+data/chemcpa_lincs_smiles/GSE92742_Broad_LINCS_pert_info.txt.gz
+data/toy_branching_snapshots/conditioned_snapshot_table.csv
+data/toy_branching_snapshots/hidden_same_cell_paths_for_fig01_02.csv
+data/toy_branching_snapshots/observed_2d_counts_by_time.csv
+data/toy_branching_snapshots/observed_2d_schema.csv
+
+# Local development-only checks.
+tests/
 
 # Generated caches, checkpoints, and executed notebook copies.
 archive/
